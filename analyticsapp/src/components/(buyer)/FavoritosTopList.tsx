@@ -23,7 +23,8 @@ const COLORS = [
   "#E59BFF",
 ];
 
-function shortNombre(nombre: string) {
+function shortNombre(nombre: string | null) {
+  if (!nombre) return "Sin nombre";
   return nombre.length > 18 ? `${nombre.slice(0, 16)}…` : nombre;
 }
 

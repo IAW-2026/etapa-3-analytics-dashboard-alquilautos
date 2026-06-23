@@ -71,7 +71,7 @@ export default async function BuyerPage() {
     <>
       <PageHeader
         title="Buyer App"
-        description="Métricas de alquiladores: crecimiento, perfil demográfico, onboarding y favoritos."
+        description="Métricas de alquiladores: crecimiento y favoritos."
       />
 
       {/* KPIs — Alquiladores */}

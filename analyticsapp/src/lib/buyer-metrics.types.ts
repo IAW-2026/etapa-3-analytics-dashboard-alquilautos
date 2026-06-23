@@ -24,7 +24,7 @@ export interface TotalFavoritos {
 
 export interface VehiculoFavoriteado {
   id_vehiculo: string;
-  nombre: string;
+  nombre: string | null;
   cantidad: number;
 }
 
