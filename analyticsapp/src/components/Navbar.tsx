@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
+import { UserButton } from "@clerk/nextjs";
 
 const navItems = [
   { href: "/", label: "Overview" },
@@ -56,6 +57,7 @@ export function Navbar() {
               <Plus className="size-4 shrink-0" />
               Exportar
             </button>
+            <UserButton afterSignOutUrl="/sign-in" />
           </div>
         </div>
       </div>
