@@ -37,7 +37,7 @@ export const EXPORT_APPS: ExportApp[] = [
     id: "payments",
     label: "Payments App",
     description: "Pagos y payouts",
-    available: false,
+    available: true,
   },
   {
     id: "feedback",
