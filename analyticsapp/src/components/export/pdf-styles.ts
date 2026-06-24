@@ -17,6 +17,12 @@ export const PDF_TABLE_STYLES = {
   },
   bodyStyles: { fontSize: 9 },
   alternateRowStyles: { fillColor: PDF_COLORS.LIGHT },
+  // fuerza centrado en columnas 1+ tanto en header como en body
+  didParseCell: (data: any) => {
+    if (data.column.index >= 1) {
+      data.cell.styles.halign = "center";
+    }
+  },
 };
 
 export function addPDFHeader(doc: jsPDF, appName: string): number {
