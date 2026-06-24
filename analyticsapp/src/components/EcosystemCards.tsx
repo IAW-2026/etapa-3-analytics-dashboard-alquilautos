@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 type AppCard =
   | {
@@ -9,7 +10,14 @@ type AppCard =
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/buyer" | "/shipping" | "/payments" | "/feedback";
+      href: "/buyer";
+      label: string;
+      title: string;
+      status: "active";
+      stats: { label: string; value: string }[];
+    }
+  | {
+      href: "/shipping" | "/payments" | "/feedback";
       label: string;
       title: string;
       status: "soon";
@@ -17,11 +25,10 @@ type AppCard =
 
 export function EcosystemCards({
   sellerStats,
+  buyerStats,
 }: {
-  // TODO: el caller (page.tsx) resuelve esto con
-  // GET /api/metricas/resumen-general (total_propietarios)
-  // GET /api/metricas/ocupacion-vehiculos (ocupacion_promedio_plataforma)
   sellerStats: { propietarios: number; ocupacionPromedio: number };
+  buyerStats: { total: number };
 }) {
   const cards: AppCard[] = [
     {
@@ -34,7 +41,13 @@ export function EcosystemCards({
         { label: "Ocupación prom.", value: `${sellerStats.ocupacionPromedio}%` },
       ],
     },
-    { href: "/buyer", label: "Buyer App", title: "Alquiladores", status: "soon" },
+    {
+      href: "/buyer",
+      label: "Buyer App",
+      title: "Alquiladores",
+      status: "active",
+      stats: [{ label: "Alquiladores", value: String(buyerStats.total) }],
+    },
     { href: "/shipping", label: "Shipping App", title: "Logística & Entregas", status: "soon" },
     { href: "/payments", label: "Payments App", title: "Pagos & Payouts", status: "soon" },
     { href: "/feedback", label: "Feedback App", title: "Calificaciones", status: "soon" },
@@ -64,6 +77,28 @@ export function EcosystemCards({
                 <div key={s.label}>
                   <p className="text-[10px] opacity-70 uppercase tracking-wide">{s.label}</p>
                   <p className="text-sm font-medium">{s.value}</p>
+                </div>
+              ))}
+            </div>
+          </Link>
+        ) : c.status === "active" ? (
+          <Link
+            key={c.href}
+            href={c.href}
+            className="block p-4 bg-card rounded-xl ring-1 ring-violet-500/30 shadow-sm hover:ring-violet-500/60 hover:shadow-md transition-all group"
+          >
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-semibold uppercase text-violet-500 tracking-tight">{c.label}</span>
+                <h3 className="text-lg font-medium text-foreground">{c.title}</h3>
+              </div>
+              <ArrowRight className="size-4 text-violet-400 group-hover:translate-x-0.5 transition-transform mt-1" />
+            </div>
+            <div className="mt-4 border-t border-border/60 pt-4 flex items-center gap-4">
+              {c.stats.map((s) => (
+                <div key={s.label}>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
+                  <p className="text-sm font-semibold text-foreground">{s.value}</p>
                 </div>
               ))}
             </div>

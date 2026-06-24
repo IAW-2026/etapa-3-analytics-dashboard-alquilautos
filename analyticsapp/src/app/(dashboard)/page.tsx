@@ -1,12 +1,13 @@
 import { fetchSellerMetric } from "@/lib/seller-api";
+import { getTotalAlquiladores } from "@/app/api/(buyer)/alquiladores/total/route";
 import { KpiCard } from "@/components/KpiCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
-import { RevenueChart, type IngresoPeriodo } from "@/components/RevenueChart";
+import { RevenueChart } from "@/components/RevenueChart";
 import { EcosystemCards } from "@/components/EcosystemCards";
-import { ActivityFeed, type ActividadRecienteData } from "@/components/ActivityFeed";
+import { ActivityFeed } from "@/components/ActivityFeed";
 import { formatARS, formatNumber } from "@/lib/format";
-import type { ResumenGeneral, TasaConversion, VehiculoTop, OcupacionVehiculos } from "@/lib/seller-metrics.types";
+import type { ResumenGeneral, TasaConversion, VehiculoTop, OcupacionVehiculos, IngresoPeriodo, ActividadRecienteData } from "@/lib/seller-metrics.types";
 
 function rangoMesActual() {
   const now = new Date();
@@ -19,17 +20,19 @@ function rangoMesActual() {
 export default async function OverviewPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const [resumenRes, tasaRes, topRes, ingresosRes, actividadRes, ocupacionRes] = await Promise.all([
+  const [resumenRes, tasaRes, topRes, ingresosRes, actividadRes, ocupacionRes, totalAlquiladoresRes] = await Promise.all([
     fetchSellerMetric<ResumenGeneral>("/resumen-general"),
     fetchSellerMetric<TasaConversion>("/tasa-conversion"),
     fetchSellerMetric<VehiculoTop[]>("/vehiculos-top", { limit: "5" }),
     fetchSellerMetric<IngresoPeriodo[]>("/ingresos-por-periodo", { granularity: "month" }),
     fetchSellerMetric<ActividadRecienteData>("/actividad-reciente", { limit: "5" }),
     fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", { desde, hasta }),
+    getTotalAlquiladores(),
   ]);
 
   const resumen = resumenRes.data;
   const tasa = tasaRes.data;
+  const totalAlquiladores = totalAlquiladoresRes.data;
   const top = topRes.data ?? [];
   const ingresos = ingresosRes.data ?? [];
   const actividad = actividadRes.data;
@@ -63,6 +66,10 @@ export default async function OverviewPage() {
         <KpiCard
           label="Tasa de Conversión"
           value={tasa ? `${tasa.tasa_conversion}%` : "—"}
+        />
+        <KpiCard
+          label="Alquiladores Totales"
+          value={totalAlquiladores ? String(totalAlquiladores.total) : "—"}
         />
       </div>
 
@@ -121,6 +128,7 @@ export default async function OverviewPage() {
               propietarios: resumen?.total_propietarios ?? 0,
               ocupacionPromedio: ocupacion?.ocupacion_promedio_plataforma ?? 0,
             }}
+            buyerStats={{ total: totalAlquiladores?.total ?? 0 }}
           />
           {actividad && <ActivityFeed data={actividad} />}
         </div>
