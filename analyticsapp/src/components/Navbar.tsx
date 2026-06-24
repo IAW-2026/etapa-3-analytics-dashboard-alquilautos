@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Plus } from "lucide-react";
 import { UserButton } from "@clerk/nextjs";
+import { ExportModal } from "@/components/export/ExportModal";
 
 const navItems = [
   { href: "/", label: "Overview" },
@@ -16,8 +18,10 @@ const navItems = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const [exportOpen, setExportOpen] = useState(false);
 
   return (
+    <>
     <nav className="sticky top-0 z-40 w-full bg-background/80 backdrop-blur-md border-b border-border/60">
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
@@ -53,7 +57,10 @@ export function Navbar() {
               Sync hace 5 min
             </div>
             <div className="h-8 w-px bg-border mx-2" />
-            <button className="py-2 pr-3 pl-2 bg-neutral-900 text-white rounded-md text-sm font-medium flex items-center gap-2 hover:bg-neutral-800 transition-colors">
+            <button
+              onClick={() => setExportOpen(true)}
+              className="py-2 pr-3 pl-2 bg-neutral-900 text-white rounded-md text-sm font-medium flex items-center gap-2 hover:bg-neutral-800 transition-colors"
+            >
               <Plus className="size-4 shrink-0" />
               Exportar
             </button>
@@ -62,5 +69,8 @@ export function Navbar() {
         </div>
       </div>
     </nav>
+
+    {exportOpen && <ExportModal onClose={() => setExportOpen(false)} />}
+    </>
   );
 }
