@@ -1,4 +1,9 @@
 import type { ExportFormat } from "./export-config";
+import {
+  styleHeader, styleTitle, styleSubtitle,
+  styleDataValue, styleSectionLabel, styleTotalRow,
+} from "./excel-styles";
+import { PDF_TABLE_STYLES, addPDFHeader, addPDFSectionTitle, addPDFFooter } from "./pdf-styles";
 
 async function fetchBuyerData() {
   const [total, onboarding, edad, nuevos, totalFav, masFav, porUsuario, promedio] =
@@ -19,46 +24,6 @@ type BuyerData = Awaited<ReturnType<typeof fetchBuyerData>>;
 
 // ─── EXCEL ────────────────────────────────────────────────────────────────────
 
-const BLUE       = "FF1A5CFF";
-const BLUE_LIGHT = "FFE8EEFF";
-const WHITE      = "FFFFFFFF";
-const DARK       = "FF111827";
-const GRAY       = "FF6B7280";
-
-type XLCell = import("exceljs").Cell;
-
-function styleHeader(cell: XLCell) {
-  cell.fill   = { type: "pattern", pattern: "solid", fgColor: { argb: BLUE } };
-  cell.font   = { bold: true, color: { argb: WHITE }, size: 10 };
-  cell.alignment = { horizontal: "center", vertical: "middle" };
-  cell.border = { bottom: { style: "thin", color: { argb: WHITE } } };
-}
-
-function styleTitle(cell: XLCell) {
-  cell.font      = { bold: true, color: { argb: BLUE }, size: 12 };
-  cell.alignment = { horizontal: "left", vertical: "middle" };
-}
-
-function styleSubtitle(cell: XLCell) {
-  cell.font      = { italic: true, color: { argb: GRAY }, size: 9 };
-}
-
-function styleDataLabel(cell: XLCell) {
-  cell.font      = { color: { argb: DARK }, size: 10 };
-  cell.alignment = { horizontal: "left", vertical: "middle" };
-}
-
-function styleDataValue(cell: XLCell, shade: boolean) {
-  cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: shade ? BLUE_LIGHT : WHITE } };
-  cell.font      = { color: { argb: DARK }, size: 10 };
-  cell.alignment = { horizontal: "center", vertical: "middle" };
-}
-
-function styleSectionLabel(cell: XLCell, shade: boolean) {
-  cell.fill      = { type: "pattern", pattern: "solid", fgColor: { argb: shade ? BLUE_LIGHT : WHITE } };
-  styleDataLabel(cell);
-}
-
 async function exportExcel(data: BuyerData) {
   const ExcelJS = await import("exceljs");
   const wb = new ExcelJS.Workbook();
@@ -67,21 +32,18 @@ async function exportExcel(data: BuyerData) {
 
   const fecha = new Date().toLocaleDateString("es-AR");
 
-  const onbTotal    = (data.onboarding?.completo ?? 0) + (data.onboarding?.pendiente ?? 0);
-  const onbPct      = onbTotal > 0 ? `${Math.round((data.onboarding.completo / onbTotal) * 100)}%` : "—";
-  const adoptTotal  = (data.porUsuario?.con_favoritos ?? 0) + (data.porUsuario?.sin_favoritos ?? 0);
-  const adoptPct    = adoptTotal > 0 ? `${Math.round((data.porUsuario.con_favoritos / adoptTotal) * 100)}%` : "—";
-  const edadTotal   = (data.edad?.menores_de_25 ?? 0) + (data.edad?.entre_25_y_40 ?? 0) + (data.edad?.mayores_de_40 ?? 0) + (data.edad?.sin_datos ?? 0);
-  const pct         = (n: number) => edadTotal > 0 ? `${Math.round((n / edadTotal) * 100)}%` : "—";
+  const onbTotal   = (data.onboarding?.completo ?? 0) + (data.onboarding?.pendiente ?? 0);
+  const onbPct     = onbTotal > 0 ? `${Math.round((data.onboarding.completo / onbTotal) * 100)}%` : "—";
+  const adoptTotal = (data.porUsuario?.con_favoritos ?? 0) + (data.porUsuario?.sin_favoritos ?? 0);
+  const adoptPct   = adoptTotal > 0 ? `${Math.round((data.porUsuario.con_favoritos / adoptTotal) * 100)}%` : "—";
+  const edadTotal  = (data.edad?.menores_de_25 ?? 0) + (data.edad?.entre_25_y_40 ?? 0) + (data.edad?.mayores_de_40 ?? 0) + (data.edad?.sin_datos ?? 0);
+  const pct        = (n: number) => edadTotal > 0 ? `${Math.round((n / edadTotal) * 100)}%` : "—";
   const meses: { mes: string; total: number }[] = data.nuevos?.meses ?? [];
   const vehiculos: { id_vehiculo: string; nombre: string | null; cantidad: number }[] = data.masFav?.vehiculos ?? [];
 
   // ── Hoja 1: Resumen ──────────────────────────────────────────────────────
   const ws1 = wb.addWorksheet("Resumen");
-  ws1.columns = [
-    { key: "a", width: 42 },
-    { key: "b", width: 22 },
-  ];
+  ws1.columns = [{ key: "a", width: 42 }, { key: "b", width: 22 }];
 
   ws1.addRow(["AlquilAutos Analytics — Buyer App"]);
   styleTitle(ws1.lastRow!.getCell(1));
@@ -141,9 +103,8 @@ async function exportExcel(data: BuyerData) {
   ws2.addRow([]);
   const totalRow = ws2.addRow(["Total acumulado", meses.reduce((a, m) => a + m.total, 0)]);
   totalRow.height = 20;
-  totalRow.getCell(1).font = { bold: true, color: { argb: BLUE } };
-  totalRow.getCell(2).font = { bold: true, color: { argb: BLUE } };
-  totalRow.getCell(2).alignment = { horizontal: "center" };
+  styleTotalRow(totalRow.getCell(1), "left");
+  styleTotalRow(totalRow.getCell(2), "center");
 
   // ── Hoja 3: Distribución por edad ────────────────────────────────────────
   const ws3 = wb.addWorksheet("Distribución por edad");
@@ -162,7 +123,7 @@ async function exportExcel(data: BuyerData) {
     ["Menores de 25 años", data.edad?.menores_de_25 ?? "—", pct(data.edad?.menores_de_25 ?? 0)],
     ["Entre 25 y 40 años", data.edad?.entre_25_y_40 ?? "—", pct(data.edad?.entre_25_y_40 ?? 0)],
     ["Mayores de 40 años", data.edad?.mayores_de_40 ?? "—", pct(data.edad?.mayores_de_40 ?? 0)],
-    ["Sin datos",           data.edad?.sin_datos   ?? "—", pct(data.edad?.sin_datos ?? 0)],
+    ["Sin datos",          data.edad?.sin_datos    ?? "—", pct(data.edad?.sin_datos ?? 0)],
   ];
   edadRows.forEach(([seg, cant, p], i) => {
     const row = ws3.addRow([seg, cant, p]);
@@ -175,10 +136,9 @@ async function exportExcel(data: BuyerData) {
   ws3.addRow([]);
   const totEdad = ws3.addRow(["Total", edadTotal, "100%"]);
   totEdad.height = 20;
-  [1, 2, 3].forEach((c) => {
-    totEdad.getCell(c).font = { bold: true, color: { argb: BLUE } };
-    totEdad.getCell(c).alignment = { horizontal: c === 1 ? "left" : "center" };
-  });
+  styleTotalRow(totEdad.getCell(1), "left");
+  styleTotalRow(totEdad.getCell(2), "center");
+  styleTotalRow(totEdad.getCell(3), "center");
 
   // ── Hoja 4: Favoritos ────────────────────────────────────────────────────
   const ws4 = wb.addWorksheet("Favoritos");
@@ -195,11 +155,11 @@ async function exportExcel(data: BuyerData) {
   styleHeader(hdrFav.getCell(2));
 
   const favRows: [string, string | number][] = [
-    ["Total de favoritos",                data.totalFav?.total ?? "—"],
-    ["Promedio por usuario",              data.promedio?.promedio ?? "—"],
-    ["Usuarios con favoritos",            data.porUsuario?.con_favoritos ?? "—"],
-    ["Usuarios sin favoritos",            data.porUsuario?.sin_favoritos ?? "—"],
-    ["Tasa de adopción",                  adoptPct],
+    ["Total de favoritos",     data.totalFav?.total ?? "—"],
+    ["Promedio por usuario",   data.promedio?.promedio ?? "—"],
+    ["Usuarios con favoritos", data.porUsuario?.con_favoritos ?? "—"],
+    ["Usuarios sin favoritos", data.porUsuario?.sin_favoritos ?? "—"],
+    ["Tasa de adopción",       adoptPct],
   ];
   favRows.forEach(([label, value], i) => {
     const row = ws4.addRow([label, value]);
@@ -225,7 +185,6 @@ async function exportExcel(data: BuyerData) {
     });
   }
 
-  // Descarga
   const buffer = await wb.xlsx.writeBuffer();
   const blob   = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   const url    = URL.createObjectURL(blob);
@@ -243,77 +202,38 @@ async function exportPDF(data: BuyerData) {
   const { default: autoTable } = await import("jspdf-autotable");
 
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const fecha = new Date().toLocaleDateString("es-AR", {
-    day: "2-digit", month: "long", year: "numeric",
-  });
 
-  const VIOLET = [26, 92, 255] as [number, number, number];
-  const GRAY   = [100, 100, 100] as [number, number, number];
-  const LIGHT  = [232, 238, 255] as [number, number, number];
+  let y = addPDFHeader(doc, "Buyer App");
 
-  let y = 20;
-
-  // Header
-  doc.setFillColor(...VIOLET);
-  doc.rect(0, 0, 210, 28, "F");
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.setFont("helvetica", "bold");
-  doc.text("AlquilAutos Analytics", 14, 13);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text("Buyer App — Reporte de métricas", 14, 21);
-  doc.setFontSize(9);
-  doc.text(`Exportado el ${fecha}`, 196, 21, { align: "right" });
-
-  y = 38;
-  doc.setTextColor(0, 0, 0);
-
-  // ── Sección: KPIs principales ────────────────────────────────────────────
+  // ── Alquiladores ─────────────────────────────────────────────────────────
   const onbTotal = (data.onboarding?.completo ?? 0) + (data.onboarding?.pendiente ?? 0);
-  const onbPct = onbTotal > 0
-    ? `${Math.round((data.onboarding.completo / onbTotal) * 100)}%`
-    : "—";
+  const onbPct   = onbTotal > 0 ? `${Math.round((data.onboarding.completo / onbTotal) * 100)}%` : "—";
 
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...VIOLET);
-  doc.text("ALQUILADORES", 14, y);
-  y += 4;
-
+  y = addPDFSectionTitle(doc, "ALQUILADORES", y);
   autoTable(doc, {
     startY: y,
     head: [["Indicador", "Valor"]],
     body: [
-      ["Total de alquiladores", String(data.total?.total ?? "—")],
-      ["Onboarding completo", String(data.onboarding?.completo ?? "—")],
-      ["Onboarding pendiente", String(data.onboarding?.pendiente ?? "—")],
+      ["Total de alquiladores",         String(data.total?.total ?? "—")],
+      ["Onboarding completo",           String(data.onboarding?.completo ?? "—")],
+      ["Onboarding pendiente",          String(data.onboarding?.pendiente ?? "—")],
       ["Tasa de onboarding completado", onbPct],
     ],
-    headStyles: { fillColor: VIOLET, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9 },
-    bodyStyles: { fontSize: 9 },
-    alternateRowStyles: { fillColor: LIGHT },
+    ...PDF_TABLE_STYLES,
     columnStyles: { 0: { cellWidth: 120 }, 1: { cellWidth: 60, halign: "center" } },
     margin: { left: 14, right: 14 },
   });
-
   y = (doc as any).lastAutoTable.finalY + 10;
 
-  // ── Sección: Distribución por edad ───────────────────────────────────────
+  // ── Distribución por edad ─────────────────────────────────────────────────
   const edadTotal =
     (data.edad?.menores_de_25 ?? 0) +
     (data.edad?.entre_25_y_40 ?? 0) +
     (data.edad?.mayores_de_40 ?? 0) +
     (data.edad?.sin_datos ?? 0);
-  const pct = (n: number) =>
-    edadTotal > 0 ? `${Math.round((n / edadTotal) * 100)}%` : "—";
+  const pct = (n: number) => edadTotal > 0 ? `${Math.round((n / edadTotal) * 100)}%` : "—";
 
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...VIOLET);
-  doc.text("DISTRIBUCIÓN POR EDAD", 14, y);
-  y += 4;
-
+  y = addPDFSectionTitle(doc, "DISTRIBUCIÓN POR EDAD", y);
   autoTable(doc, {
     startY: y,
     head: [["Segmento", "Cantidad", "Porcentaje"]],
@@ -321,124 +241,70 @@ async function exportPDF(data: BuyerData) {
       ["Menores de 25 años", String(data.edad?.menores_de_25 ?? "—"), pct(data.edad?.menores_de_25 ?? 0)],
       ["Entre 25 y 40 años", String(data.edad?.entre_25_y_40 ?? "—"), pct(data.edad?.entre_25_y_40 ?? 0)],
       ["Mayores de 40 años", String(data.edad?.mayores_de_40 ?? "—"), pct(data.edad?.mayores_de_40 ?? 0)],
-      ["Sin datos", String(data.edad?.sin_datos ?? "—"), pct(data.edad?.sin_datos ?? 0)],
+      ["Sin datos",          String(data.edad?.sin_datos    ?? "—"), pct(data.edad?.sin_datos ?? 0)],
     ],
-    headStyles: { fillColor: VIOLET, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9 },
-    bodyStyles: { fontSize: 9 },
-    alternateRowStyles: { fillColor: LIGHT },
-    columnStyles: {
-      0: { cellWidth: 90 },
-      1: { cellWidth: 45, halign: "center" },
-      2: { cellWidth: 45, halign: "center" },
-    },
+    ...PDF_TABLE_STYLES,
+    columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 45, halign: "center" }, 2: { cellWidth: 45, halign: "center" } },
     margin: { left: 14, right: 14 },
   });
-
   y = (doc as any).lastAutoTable.finalY + 10;
 
-  // ── Sección: Crecimiento mensual ─────────────────────────────────────────
+  // ── Crecimiento mensual ───────────────────────────────────────────────────
   const meses: { mes: string; total: number }[] = data.nuevos?.meses ?? [];
 
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...VIOLET);
-  doc.text("NUEVOS ALQUILADORES POR MES", 14, y);
-  y += 4;
-
+  y = addPDFSectionTitle(doc, "NUEVOS ALQUILADORES POR MES", y);
   autoTable(doc, {
     startY: y,
     head: [["Mes", "Nuevos alquiladores"]],
     body: meses.map((m) => [m.mes, String(m.total)]),
-    headStyles: { fillColor: VIOLET, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9 },
-    bodyStyles: { fontSize: 9 },
-    alternateRowStyles: { fillColor: LIGHT },
+    ...PDF_TABLE_STYLES,
     columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 90, halign: "center" } },
     margin: { left: 14, right: 14 },
   });
-
   y = (doc as any).lastAutoTable.finalY + 10;
 
-  // ── Sección: Favoritos ───────────────────────────────────────────────────
-  const adopcionTotal =
-    (data.porUsuario?.con_favoritos ?? 0) + (data.porUsuario?.sin_favoritos ?? 0);
-  const adopcionPct = adopcionTotal > 0
-    ? `${Math.round((data.porUsuario.con_favoritos / adopcionTotal) * 100)}%`
-    : "—";
+  // ── Favoritos ─────────────────────────────────────────────────────────────
+  const adopcionTotal = (data.porUsuario?.con_favoritos ?? 0) + (data.porUsuario?.sin_favoritos ?? 0);
+  const adopcionPct   = adopcionTotal > 0 ? `${Math.round((data.porUsuario.con_favoritos / adopcionTotal) * 100)}%` : "—";
 
   if (y > 220) { doc.addPage(); y = 20; }
 
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.setTextColor(...VIOLET);
-  doc.text("FAVORITOS", 14, y);
-  y += 4;
-
+  y = addPDFSectionTitle(doc, "FAVORITOS", y);
   autoTable(doc, {
     startY: y,
     head: [["Indicador", "Valor"]],
     body: [
-      ["Total de favoritos", String(data.totalFav?.total ?? "—")],
-      ["Promedio por usuario", String(data.promedio?.promedio ?? "—")],
+      ["Total de favoritos",     String(data.totalFav?.total ?? "—")],
+      ["Promedio por usuario",   String(data.promedio?.promedio ?? "—")],
       ["Usuarios con favoritos", String(data.porUsuario?.con_favoritos ?? "—")],
       ["Usuarios sin favoritos", String(data.porUsuario?.sin_favoritos ?? "—")],
-      ["Tasa de adopción", adopcionPct],
+      ["Tasa de adopción",       adopcionPct],
     ],
-    headStyles: { fillColor: VIOLET, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9 },
-    bodyStyles: { fontSize: 9 },
-    alternateRowStyles: { fillColor: LIGHT },
+    ...PDF_TABLE_STYLES,
     columnStyles: { 0: { cellWidth: 120 }, 1: { cellWidth: 60, halign: "center" } },
     margin: { left: 14, right: 14 },
   });
-
   y = (doc as any).lastAutoTable.finalY + 10;
 
-  // ── Vehículos más guardados ──────────────────────────────────────────────
+  // ── Vehículos más guardados ───────────────────────────────────────────────
   const vehiculos: { id_vehiculo: string; nombre: string | null; cantidad: number }[] =
     data.masFav?.vehiculos ?? [];
 
   if (vehiculos.length > 0) {
     if (y > 220) { doc.addPage(); y = 20; }
 
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...VIOLET);
-    doc.text("VEHÍCULOS MÁS GUARDADOS", 14, y);
-    y += 4;
-
+    y = addPDFSectionTitle(doc, "VEHÍCULOS MÁS GUARDADOS", y);
     autoTable(doc, {
       startY: y,
       head: [["#", "Vehículo", "Veces guardado"]],
-      body: vehiculos.map((v, i) => [
-        String(i + 1),
-        v.nombre ?? v.id_vehiculo,
-        String(v.cantidad),
-      ]),
-      headStyles: { fillColor: VIOLET, textColor: [255, 255, 255], fontStyle: "bold", fontSize: 9 },
-      bodyStyles: { fontSize: 9 },
-      alternateRowStyles: { fillColor: LIGHT },
-      columnStyles: {
-        0: { cellWidth: 15, halign: "center" },
-        1: { cellWidth: 120 },
-        2: { cellWidth: 45, halign: "center" },
-      },
+      body: vehiculos.map((v, i) => [String(i + 1), v.nombre ?? v.id_vehiculo, String(v.cantidad)]),
+      ...PDF_TABLE_STYLES,
+      columnStyles: { 0: { cellWidth: 15, halign: "center" }, 1: { cellWidth: 120 }, 2: { cellWidth: 45, halign: "center" } },
       margin: { left: 14, right: 14 },
     });
   }
 
-  // Footer en todas las páginas
-  const totalPages = (doc as any).internal.getNumberOfPages();
-  for (let i = 1; i <= totalPages; i++) {
-    doc.setPage(i);
-    doc.setFontSize(8);
-    doc.setTextColor(...GRAY);
-    doc.text(
-      `AlquilAutos Analytics · Página ${i} de ${totalPages}`,
-      105,
-      290,
-      { align: "center" },
-    );
-  }
-
+  addPDFFooter(doc);
   doc.save(`buyer-metrics-${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
