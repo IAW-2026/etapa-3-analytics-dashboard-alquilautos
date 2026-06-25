@@ -1,4 +1,5 @@
 import { fetchSellerMetric } from "@/lib/seller-api";
+import { fetchPaymentMetric } from "@/lib/payments-api";
 import { getTotalAlquiladores } from "@/app/api/(buyer)/alquiladores/total/route";
 import { KpiCard } from "@/components/KpiCard";
 import { PageHeader } from "@/components/PageHeader";
@@ -6,8 +7,11 @@ import { SectionCard } from "@/components/SectionCard";
 import { RevenueChart } from "@/components/RevenueChart";
 import { EcosystemCards } from "@/components/EcosystemCards";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { PaymentsApprovalGauge } from "@/components/(payments)/PaymentsApprovalGauge";
+import { PaymentsStatusPie } from "@/components/(payments)/PaymentsStatusPie";
 import { formatARS, formatNumber } from "@/lib/format";
 import type { ResumenGeneral, TasaConversion, VehiculoTop, OcupacionVehiculos, IngresoPeriodo, ActividadRecienteData } from "@/lib/seller-metrics.types";
+import type { PaymentsResumen } from "@/lib/payments-metrics.types";
 
 function rangoMesActual() {
   const now = new Date();
@@ -20,7 +24,7 @@ function rangoMesActual() {
 export default async function OverviewPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const [resumenRes, tasaRes, topRes, ingresosRes, actividadRes, ocupacionRes, totalAlquiladoresRes] = await Promise.all([
+  const [resumenRes, tasaRes, topRes, ingresosRes, actividadRes, ocupacionRes, totalAlquiladoresRes, paymentsRes] = await Promise.all([
     fetchSellerMetric<ResumenGeneral>("/resumen-general"),
     fetchSellerMetric<TasaConversion>("/tasa-conversion"),
     fetchSellerMetric<VehiculoTop[]>("/vehiculos-top", { limit: "5" }),
@@ -28,6 +32,7 @@ export default async function OverviewPage() {
     fetchSellerMetric<ActividadRecienteData>("/actividad-reciente", { limit: "5" }),
     fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", { desde, hasta }),
     getTotalAlquiladores(),
+    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", { desde, hasta }),
   ]);
 
   const resumen = resumenRes.data;
@@ -37,6 +42,7 @@ export default async function OverviewPage() {
   const ingresos = ingresosRes.data ?? [];
   const actividad = actividadRes.data;
   const ocupacion = ocupacionRes.data;
+  const paymentsData = paymentsRes.data;
 
   const hayErrorCritico = resumenRes.error && tasaRes.error;
 
@@ -113,6 +119,21 @@ export default async function OverviewPage() {
               </table>
             </div>
           </SectionCard>
+
+          {paymentsData && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <SectionCard title="Tasa de Aprobación">
+                <PaymentsApprovalGauge value={paymentsData.tasa_aprobacion} />
+              </SectionCard>
+              <SectionCard title="Estado de Pagos">
+                <PaymentsStatusPie
+                  pendientes={paymentsData.pendientes}
+                  cancelados={paymentsData.cancelados}
+                  pagos_hoy={paymentsData.pagos_hoy}
+                />
+              </SectionCard>
+            </div>
+          )}
         </div>
 
         <div className="lg:col-span-4 space-y-6">
@@ -122,6 +143,7 @@ export default async function OverviewPage() {
               ocupacionPromedio: ocupacion?.ocupacion_promedio_plataforma ?? 0,
             }}
             buyerStats={{ total: totalAlquiladores?.total ?? 0 }}
+            paymentsStats={{ recaudadoHoy: paymentsData?.pagos_hoy ?? 0 }}
           />
           {actividad && <ActivityFeed data={actividad} />}
         </div>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { formatARS } from "@/lib/format";
 
 type AppCard =
   | {
@@ -17,7 +18,14 @@ type AppCard =
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/shipping" | "/payments" | "/feedback";
+      href: "/payments";
+      label: string;
+      title: string;
+      status: "active";
+      stats: { label: string; value: string }[];
+    }
+  | {
+      href: "/shipping" | "/feedback";
       label: string;
       title: string;
       status: "soon";
@@ -26,9 +34,11 @@ type AppCard =
 export function EcosystemCards({
   sellerStats,
   buyerStats,
+  paymentsStats,
 }: {
   sellerStats: { propietarios: number; ocupacionPromedio: number };
   buyerStats: { total: number };
+  paymentsStats?: { recaudadoHoy: number };
 }) {
   const cards: AppCard[] = [
     {
@@ -49,7 +59,13 @@ export function EcosystemCards({
       stats: [{ label: "Alquiladores", value: String(buyerStats.total) }],
     },
     { href: "/shipping", label: "Shipping App", title: "Logística & Entregas", status: "soon" },
-    { href: "/payments", label: "Payments App", title: "Pagos & Payouts", status: "soon" },
+    {
+      href: "/payments",
+      label: "Payments App",
+      title: "Pagos & Payouts",
+      status: "active",
+      stats: [{ label: "Recaudado hoy", value: paymentsStats ? formatARS(paymentsStats.recaudadoHoy) : "—" }],
+    },
     { href: "/feedback", label: "Feedback App", title: "Calificaciones", status: "soon" },
   ];
 
