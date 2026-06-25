@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getTotalAlquiladores } from "@/app/api/(buyer)/alquiladores/total/route";
 import { getNuevosPorMes } from "@/app/api/(buyer)/alquiladores/nuevos-por-mes/route";
-import { getOnboarding } from "@/app/api/(buyer)/alquiladores/onboarding/route";
 import { getDistribucionEdad } from "@/app/api/(buyer)/alquiladores/edad/route";
 import { getTotalFavoritos } from "@/app/api/(buyer)/favoritos/total/route";
 import { getMasFavoriteados } from "@/app/api/(buyer)/favoritos/mas-favoriteados/route";
@@ -12,7 +11,6 @@ import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
 import { BuyerGrowthChart } from "@/components/(buyer)/BuyerGrowthChart";
 import { BuyerAgeDonut } from "@/components/(buyer)/BuyerAgeDonut";
-import { BuyerOnboardingBar } from "@/components/(buyer)/BuyerOnboardingBar";
 import { FavoritosTopList } from "@/components/(buyer)/FavoritosTopList";
 import { FavoritosAdopcionBar } from "@/components/(buyer)/FavoritosAdopcionBar";
 
@@ -25,7 +23,6 @@ export default async function BuyerPage() {
   const [
     totalRes,
     nuevosRes,
-    onboardingRes,
     edadRes,
     totalFavRes,
     topFavRes,
@@ -34,7 +31,6 @@ export default async function BuyerPage() {
   ] = await Promise.all([
     getTotalAlquiladores(),
     getNuevosPorMes(),
-    getOnboarding(),
     getDistribucionEdad(),
     getTotalFavoritos(),
     getMasFavoriteados(),
@@ -44,7 +40,6 @@ export default async function BuyerPage() {
 
   const total = totalRes.data;
   const nuevos = nuevosRes.data?.meses ?? [];
-  const onboarding = onboardingRes.data;
   const edad = edadRes.data;
   const totalFav = totalFavRes.data;
   const topFav = topFavRes.data?.vehiculos ?? [];
@@ -62,11 +57,6 @@ export default async function BuyerPage() {
       ? ultimoMes >= penultimoMes ? "up" : "down"
       : "neutral";
 
-  const tasaOnboarding =
-    onboarding && onboarding.completo + onboarding.pendiente > 0
-      ? `${((onboarding.completo / (onboarding.completo + onboarding.pendiente)) * 100).toFixed(0)}%`
-      : "—";
-
   return (
     <>
       <PageHeader
@@ -75,7 +65,7 @@ export default async function BuyerPage() {
       />
 
       {/* KPIs — Alquiladores */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         <KpiCard
           label="Alquiladores totales"
           value={total ? String(total.total) : "—"}
@@ -85,15 +75,6 @@ export default async function BuyerPage() {
           value={ultimoMes !== undefined ? String(ultimoMes) : "—"}
           delta={deltaMes}
           trend={tendencia}
-        />
-        <KpiCard
-          label="Tasa de onboarding completado"
-          value={tasaOnboarding}
-          trend={
-            onboarding && onboarding.completo / (onboarding.completo + onboarding.pendiente) >= 0.7
-              ? "up"
-              : "down"
-          }
         />
       </div>
 
@@ -117,17 +98,6 @@ export default async function BuyerPage() {
             )}
           </SectionCard>
         </div>
-      </div>
-
-      {/* Onboarding */}
-      <div className="mb-10">
-        <SectionCard title="Estado de onboarding">
-          {onboarding ? (
-            <BuyerOnboardingBar data={onboarding} />
-          ) : (
-            <p className="text-sm text-muted-foreground py-4 text-center">Sin datos de onboarding</p>
-          )}
-        </SectionCard>
       </div>
 
       {/* Sección Favoritos */}
