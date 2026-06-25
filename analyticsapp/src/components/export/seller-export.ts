@@ -75,9 +75,9 @@ async function exportExcel(data: SellerData) {
     ["Reservas totales",        data.resumen?.reservas?.total ?? "—"],
     ["Ingresos totales (ARS)",  data.resumen?.ingresos_totales_ars ?? "—"],
     ["Ocupación promedio (%)",  data.ocupacion?.ocupacion_promedio_plataforma ?? "—"],
-    ["Tasa de conversión (%)",  data.tasa?.tasa_conversion ?? "—"],
-    ["Tasa de cancelación (%)", data.tasa?.tasa_cancelacion ?? "—"],
-    ["Ciclo promedio (días)",   data.tasa?.tiempo_promedio_ciclo_dias ?? "—"],
+    ["Tasa de finalización (%)",  data.tasa?.tasa_conversion ?? "—"],
+    ["Tasa de cancelación (%)",   data.tasa?.tasa_cancelacion ?? "—"],
+    ["Días promedio de reserva",  data.tasa?.tiempo_promedio_ciclo_dias ?? "—"],
   ];
 
   const hdr1 = ws1.addRow(["Indicador", "Valor"]);
@@ -392,9 +392,9 @@ async function exportPDF(data: SellerData) {
     startY: y,
     head: [["Indicador", "Valor"]],
     body: [
-      ["Tasa de conversión (%)",  String(data.tasa?.tasa_conversion ?? "—")],
-      ["Tasa de cancelación (%)", String(data.tasa?.tasa_cancelacion ?? "—")],
-      ["Ciclo promedio (días)",   String(data.tasa?.tiempo_promedio_ciclo_dias ?? "—")],
+      ["Tasa de finalización (%)",  String(data.tasa?.tasa_conversion ?? "—")],
+      ["Tasa de cancelación (%)",   String(data.tasa?.tasa_cancelacion ?? "—")],
+      ["Días promedio de reserva",  String(data.tasa?.tiempo_promedio_ciclo_dias ?? "—")],
     ],
     ...PDF_TABLE_STYLES,
     columnStyles: { 0: { cellWidth: 120 }, 1: { cellWidth: 60, halign: "center" } },
