@@ -44,9 +44,6 @@ export function ActivityFeed({ data }: { data: ActividadRecienteData }) {
           </div>
         ))}
       </div>
-      <button className="w-full py-3 bg-muted/50 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest border-t border-border/60 hover:text-foreground transition-colors">
-        Ver Historial Completo
-      </button>
     </SectionCard>
   );
 }

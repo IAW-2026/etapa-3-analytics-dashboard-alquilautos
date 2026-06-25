@@ -64,7 +64,7 @@ export default async function OverviewPage() {
           value={resumen ? formatNumber(resumen.reservas.total) : "—"}
         />
         <KpiCard
-          label="Tasa de Conversión"
+          label="Tasa de Finalización"
           value={tasa ? `${tasa.tasa_conversion}%` : "—"}
         />
         <KpiCard
