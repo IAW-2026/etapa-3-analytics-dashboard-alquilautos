@@ -3,7 +3,7 @@ import { fetchFeedbackMetric } from "@/lib/feedback-api";
 import type { DistribucionData } from "@/lib/feedback-metrics.types";
 
 export function getDistribucion() {
-  return fetchFeedbackMetric<DistribucionData>("/api/metrics/distribucion");
+  return fetchFeedbackMetric<DistribucionData>("/distribucion");
 }
 
 export async function GET() {

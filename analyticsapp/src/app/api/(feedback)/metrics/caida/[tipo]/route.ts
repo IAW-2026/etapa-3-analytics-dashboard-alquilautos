@@ -6,15 +6,15 @@ import type { CaidaData } from "@/lib/feedback-metrics.types";
 const DEFAULT_PARAMS = "dias_reciente=30&umbral=1.0&min_resenas=2";
 
 export function getCaidaAlquilador(params = DEFAULT_PARAMS) {
-  return fetchFeedbackMetric<CaidaData>(`/api/metrics/caida/alquilador?${params}`);
+  return fetchFeedbackMetric<CaidaData>(`/caida/alquilador?${params}`);
 }
 
 export function getCaidaPropietario(params = DEFAULT_PARAMS) {
-  return fetchFeedbackMetric<CaidaData>(`/api/metrics/caida/propietario?${params}`);
+  return fetchFeedbackMetric<CaidaData>(`/caida/propietario?${params}`);
 }
 
 export function getCaidaVehiculo(params = DEFAULT_PARAMS) {
-  return fetchFeedbackMetric<CaidaData>(`/api/metrics/caida/vehiculo?${params}`);
+  return fetchFeedbackMetric<CaidaData>(`/caida/vehiculo?${params}`);
 }
 
 export async function GET(
@@ -23,7 +23,7 @@ export async function GET(
 ) {
   const { tipo } = await params;
   const sp       = req.nextUrl.searchParams;
-  const path     = `/api/metrics/caida/${tipo}?${sp.toString()}`;
+  const path     = `/caida/${tipo}?${sp.toString()}`;
   const result   = await fetchFeedbackMetric(path);
   if (result.error) return NextResponse.json({ error: result.error }, { status: 500 });
   return NextResponse.json(result.data);

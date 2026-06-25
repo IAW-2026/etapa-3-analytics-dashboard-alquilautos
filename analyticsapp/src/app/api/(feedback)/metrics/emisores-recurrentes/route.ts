@@ -4,7 +4,7 @@ import type { EmisoresRecurrentesData } from "@/lib/feedback-metrics.types";
 
 export function getEmisoresRecurrentes(minResenas = 3, limit = 10) {
   return fetchFeedbackMetric<EmisoresRecurrentesData>(
-    `/api/metrics/emisores-recurrentes?min_resenas=${minResenas}&limit=${limit}`
+    `/emisores-recurrentes?min_resenas=${minResenas}&limit=${limit}`
   );
 }
 

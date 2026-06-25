@@ -4,7 +4,7 @@ import type { TendenciaData } from "@/lib/feedback-metrics.types";
 
 export function getTendencia(granularidad = "mes", cantidad = 12) {
   return fetchFeedbackMetric<TendenciaData>(
-    `/api/metrics/tendencia?granularidad=${granularidad}&cantidad=${cantidad}`
+    `/tendencia?granularidad=${granularidad}&cantidad=${cantidad}`
   );
 }
 

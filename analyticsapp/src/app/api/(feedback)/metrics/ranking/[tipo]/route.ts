@@ -11,19 +11,19 @@ import type {
 // Helpers tipados para importar directamente desde la page
 export function getRankingAlquilador(orden = "desc", limit = 5) {
   return fetchFeedbackMetric<RankingData<RankingItemAlquilador>>(
-    `/api/metrics/ranking/alquilador?orden=${orden}&limit=${limit}`
+    `/ranking/alquilador?orden=${orden}&limit=${limit}`
   );
 }
 
 export function getRankingPropietario(orden = "desc", limit = 5) {
   return fetchFeedbackMetric<RankingData<RankingItemPropietario>>(
-    `/api/metrics/ranking/propietario?orden=${orden}&limit=${limit}`
+    `/ranking/propietario?orden=${orden}&limit=${limit}`
   );
 }
 
 export function getRankingVehiculo(orden = "desc", limit = 5) {
   return fetchFeedbackMetric<RankingData<RankingItemVehiculo>>(
-    `/api/metrics/ranking/vehiculo?orden=${orden}&limit=${limit}`
+    `/ranking/vehiculo?orden=${orden}&limit=${limit}`
   );
 }
 
@@ -34,7 +34,7 @@ export async function GET(
 ) {
   const { tipo } = await params;
   const sp      = req.nextUrl.searchParams;
-  const path    = `/api/metrics/ranking/${tipo}?${sp.toString()}`;
+  const path    = `/ranking/${tipo}?${sp.toString()}`;
   const result  = await fetchFeedbackMetric(path);
   if (result.error) return NextResponse.json({ error: result.error }, { status: 500 });
   return NextResponse.json(result.data);

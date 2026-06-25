@@ -3,7 +3,7 @@ import { fetchFeedbackMetric } from "@/lib/feedback-api";
 import type { ResumenGlobal } from "@/lib/feedback-metrics.types";
 
 export function getResumen() {
-  return fetchFeedbackMetric<ResumenGlobal>("/api/metrics/resumen");
+  return fetchFeedbackMetric<ResumenGlobal>("/resumen");
 }
 
 export async function GET() {

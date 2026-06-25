@@ -3,7 +3,7 @@ import { fetchFeedbackMetric } from "@/lib/feedback-api";
 import type { TiempoModeracion } from "@/lib/feedback-metrics.types";
 
 export function getTiempoModeracion() {
-  return fetchFeedbackMetric<TiempoModeracion>("/api/metrics/moderacion-tiempo");
+  return fetchFeedbackMetric<TiempoModeracion>("/moderacion-tiempo");
 }
 
 export async function GET() {
