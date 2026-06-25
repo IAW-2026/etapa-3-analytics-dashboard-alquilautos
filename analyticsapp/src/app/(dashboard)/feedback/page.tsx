@@ -208,7 +208,7 @@ export default async function FeedbackPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-6">
           <SectionCard
             title="Entidades con caída brusca"
             description="Calificación reciente (30 días) vs. histórico — caída ≥ 1 punto"
@@ -216,7 +216,7 @@ export default async function FeedbackPage() {
             <FeedbackAlertasCaida items={caidasTodas} tipo="entidad" />
           </SectionCard>
         </div>
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-6">
           <SectionCard
             title="Emisores con rechazos concentrados"
             description="Usuarios con ≥ 50% de sus reseñas rechazadas"
