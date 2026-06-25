@@ -3,6 +3,8 @@ import { KpiCard } from "@/components/KpiCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
 import { BrandDistributionChart } from "@/components/BrandDistributionChart";
+import { RevenueChart } from "@/components/RevenueChart";
+import { ActivityFeed } from "@/components/ActivityFeed";
 import { formatARS, formatNumber } from "@/lib/format";
 import type {
   ResumenGeneral,
@@ -10,32 +12,54 @@ import type {
   PropietarioTop,
   OcupacionVehiculos,
   DistribucionMarca,
+  IngresoPeriodo,
+  TasaConversion,
+  ActividadRecienteData,
 } from "@/lib/seller-metrics.types";
 
-function rangoMesActual() {
+function rangoMes(offsetMeses: number) {
   const now = new Date();
-  const desde = new Date(now.getFullYear(), now.getMonth(), 1);
-  const hasta = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const desde = new Date(now.getFullYear(), now.getMonth() + offsetMeses, 1);
+  const hasta = new Date(now.getFullYear(), now.getMonth() + offsetMeses + 1, 0);
   const fmt = (d: Date) => d.toISOString().slice(0, 10);
   return { desde: fmt(desde), hasta: fmt(hasta) };
 }
 
 export default async function SellerPage() {
-  const { desde, hasta } = rangoMesActual();
+  const actual = rangoMes(0);
+  const anterior = rangoMes(-1);
 
-  const [resumenRes, ocupacionRes, topRes, propietariosRes, marcasRes] = await Promise.all([
+  const [
+    resumenRes,
+    ocupacionRes,
+    ocupacionAnteriorRes,
+    topRes,
+    propietariosRes,
+    marcasRes,
+    ingresosRes,
+    tasaRes,
+    actividadRes,
+  ] = await Promise.all([
     fetchSellerMetric<ResumenGeneral>("/resumen-general"),
-    fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", { desde, hasta }),
+    fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", actual),
+    fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", anterior),
     fetchSellerMetric<VehiculoTop[]>("/vehiculos-top", { limit: "8" }),
     fetchSellerMetric<PropietarioTop[]>("/propietarios-top", { limit: "6" }),
     fetchSellerMetric<DistribucionMarca[]>("/distribucion-marcas"),
+    fetchSellerMetric<IngresoPeriodo[]>("/ingresos-por-periodo", { granularity: "month" }),
+    fetchSellerMetric<TasaConversion>("/tasa-conversion"),
+    fetchSellerMetric<ActividadRecienteData>("/actividad-reciente", { limit: "5" }),
   ]);
 
   const resumen = resumenRes.data;
   const ocupacion = ocupacionRes.data;
+  const ocupacionAnterior = ocupacionAnteriorRes.data;
   const top = topRes.data ?? [];
   const propietarios = propietariosRes.data ?? [];
   const marcas = marcasRes.data ?? [];
+  const ingresos = ingresosRes.data ?? [];
+  const tasa = tasaRes.data;
+  const actividad = actividadRes.data;
 
   // Join real entre dos endpoints: ocupacion-vehiculos tiene el % por id_vehiculo,
   // vehiculos-top no — lo cruzamos en vez de inventar el dato.
@@ -46,6 +70,18 @@ export default async function SellerPage() {
   const totalReservas = resumen
     ? Object.values(resumen.reservas.por_estado).reduce((a, b) => a + b, 0)
     : 0;
+
+  const deltaOcupacion =
+    ocupacion && ocupacionAnterior
+      ? ocupacion.ocupacion_promedio_plataforma - ocupacionAnterior.ocupacion_promedio_plataforma
+      : undefined;
+
+  const ingresoMesActual = ingresos.at(-1)?.ingresos;
+  const ingresoMesAnterior = ingresos.at(-2)?.ingresos;
+  const deltaIngresos =
+    ingresoMesActual !== undefined && ingresoMesAnterior !== undefined && ingresoMesAnterior > 0
+      ? ((ingresoMesActual - ingresoMesAnterior) / ingresoMesAnterior) * 100
+      : undefined;
 
   return (
     <>
@@ -65,11 +101,23 @@ export default async function SellerPage() {
         <KpiCard
           label="Ocupación Promedio"
           value={ocupacion ? `${ocupacion.ocupacion_promedio_plataforma}%` : "—"}
+          delta={
+            deltaOcupacion !== undefined
+              ? `${deltaOcupacion >= 0 ? "+" : ""}${deltaOcupacion.toFixed(1)} pts vs mes ant.`
+              : undefined
+          }
+          trend={deltaOcupacion !== undefined ? (deltaOcupacion >= 0 ? "up" : "down") : "neutral"}
         />
         <KpiCard
           label="Ingresos Acumulados"
           value={resumen ? formatARS(resumen.ingresos_totales_ars) : "—"}
           unit="ARS"
+          delta={
+            deltaIngresos !== undefined
+              ? `${deltaIngresos >= 0 ? "+" : ""}${deltaIngresos.toFixed(1)}% vs mes ant.`
+              : undefined
+          }
+          trend={deltaIngresos !== undefined ? (deltaIngresos >= 0 ? "up" : "down") : "neutral"}
         />
       </div>
 
@@ -181,6 +229,51 @@ export default async function SellerPage() {
               <p className="text-sm text-muted-foreground">Sin datos disponibles</p>
             )}
           </SectionCard>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 mt-10 mb-6">
+        <h2 className="text-sm font-semibold text-foreground uppercase tracking-wider">
+          Actividad y Conversión
+        </h2>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-6">
+          <SectionCard title="Tendencia de Ingresos">
+            {ingresos.length > 0 ? (
+              <RevenueChart data={ingresos} />
+            ) : (
+              <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de ingresos</p>
+            )}
+          </SectionCard>
+
+          <SectionCard title="Tasa de Conversión">
+            {tasa ? (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <KpiCard label="Conversión" value={`${tasa.tasa_conversion}%`} />
+                <KpiCard label="Cancelación" value={`${tasa.tasa_cancelacion}%`} />
+                <KpiCard
+                  label="Ciclo Promedio"
+                  value={formatNumber(tasa.tiempo_promedio_ciclo_dias)}
+                  unit="días"
+                />
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de conversión</p>
+            )}
+          </SectionCard>
+        </div>
+
+        <div className="lg:col-span-4">
+          {actividad ? (
+            <ActivityFeed data={actividad} />
+          ) : (
+            <SectionCard title="Actividad Reciente">
+              <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de actividad</p>
+            </SectionCard>
+          )}
         </div>
       </div>
     </>

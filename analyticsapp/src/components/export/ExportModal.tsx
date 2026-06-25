@@ -5,10 +5,12 @@ import { X, FileText, Sheet, Loader2, Check } from "lucide-react";
 import { EXPORT_APPS, type AppId, type ExportFormat } from "./export-config";
 import { exportBuyer } from "./buyer-export";
 import { exportPayments } from "./payments-export";
+import { exportSeller } from "./seller-export";
 
 const EXPORTERS: Partial<Record<AppId, (format: ExportFormat) => Promise<void>>> = {
   buyer: exportBuyer,
   payments: exportPayments,
+  seller: exportSeller,
 };
 
 interface ExportModalProps {

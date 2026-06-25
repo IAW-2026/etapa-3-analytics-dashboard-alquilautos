@@ -25,7 +25,7 @@ export const EXPORT_APPS: ExportApp[] = [
     id: "seller",
     label: "Seller App",
     description: "Propietarios y vehículos",
-    available: false,
+    available: true,
   },
   {
     id: "shipping",
