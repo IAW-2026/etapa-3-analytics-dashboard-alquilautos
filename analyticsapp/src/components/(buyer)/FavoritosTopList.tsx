@@ -71,7 +71,7 @@ export function FavoritosTopList({ vehiculos }: { vehiculos: VehiculoFavoriteado
           />
           <Bar dataKey="cantidad" radius={[0, 6, 6, 0]}>
             {data.map((entry, i) => (
-              <Cell key={entry.nombre} fill={COLORS[i % COLORS.length]} />
+              <Cell key={entry.rank} fill={COLORS[i % COLORS.length]} />
             ))}
             <LabelList
               dataKey="cantidad"

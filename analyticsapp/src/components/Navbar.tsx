@@ -64,7 +64,7 @@ export function Navbar() {
               <Plus className="size-4 shrink-0" />
               Exportar
             </button>
-            <UserButton afterSignOutUrl="/sign-in" />
+            <UserButton />
           </div>
         </div>
       </div>

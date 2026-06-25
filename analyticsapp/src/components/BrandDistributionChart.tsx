@@ -20,8 +20,8 @@ export function BrandDistributionChart({ data }: { data: DistribucionMarca[] }) 
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(value: number, name: string) =>
-              name === "ingresos_totales" ? formatARS(value) : formatNumber(value)
+            formatter={(value, name) =>
+              name === "ingresos_totales" ? formatARS(Number(value)) : formatNumber(Number(value))
             }
           />
           <Bar dataKey="cantidad_vehiculos" radius={[6, 6, 0, 0]}>

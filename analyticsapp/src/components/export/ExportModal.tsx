@@ -6,11 +6,13 @@ import { EXPORT_APPS, type AppId, type ExportFormat } from "./export-config";
 import { exportBuyer } from "./buyer-export";
 import { exportPayments } from "./payments-export";
 import { exportFeedback } from "./feedback-export";
+import { exportSeller } from "./seller-export";
 
 const EXPORTERS: Partial<Record<AppId, (format: ExportFormat) => Promise<void>>> = {
   buyer: exportBuyer,
   payments: exportPayments,
   feedback: exportFeedback,
+  seller: exportSeller,
 };
 
 interface ExportModalProps {

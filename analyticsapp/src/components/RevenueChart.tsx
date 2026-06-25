@@ -33,7 +33,7 @@ export function RevenueChart({ data }: { data: IngresoPeriodo[] }) {
               borderRadius: 8,
               fontSize: 12,
             }}
-            formatter={(value: number) => formatARS(value)}
+            formatter={(value) => formatARS(Number(value))}
           />
           <Area type="monotone" dataKey="ingresos" stroke="#1A5CFF" strokeWidth={2} fill="url(#gradActual)" />
         </AreaChart>
