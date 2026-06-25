@@ -1,4 +1,10 @@
-export type AppId = "general" | "buyer" | "seller" | "shipping" | "payments" | "feedback";
+export type AppId =
+  | "general"
+  | "buyer"
+  | "seller"
+  | "shipping"
+  | "payments"
+  | "feedback";
 export type ExportFormat = "pdf" | "excel";
 
 export interface ExportApp {
@@ -31,7 +37,7 @@ export const EXPORT_APPS: ExportApp[] = [
     id: "shipping",
     label: "Shipping App",
     description: "Logística y entregas",
-    available: false,
+    available: true,
   },
   {
     id: "payments",
