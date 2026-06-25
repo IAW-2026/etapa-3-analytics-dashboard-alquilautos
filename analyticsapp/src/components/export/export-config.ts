@@ -42,7 +42,7 @@ export const EXPORT_APPS: ExportApp[] = [
   {
     id: "feedback",
     label: "Feedback App",
-    description: "Calificaciones",
-    available: false,
+    description: "Reseñas",
+    available: true
   },
 ];
