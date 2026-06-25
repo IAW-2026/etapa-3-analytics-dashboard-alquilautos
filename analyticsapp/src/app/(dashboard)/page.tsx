@@ -53,7 +53,7 @@ export default async function OverviewPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <KpiCard
           label="Ingresos Totales"
           value={resumen ? formatARS(resumen.ingresos_totales_ars) : "—"}
@@ -66,10 +66,6 @@ export default async function OverviewPage() {
         <KpiCard
           label="Tasa de Finalización"
           value={tasa ? `${tasa.tasa_conversion}%` : "—"}
-        />
-        <KpiCard
-          label="Alquiladores Totales"
-          value={totalAlquiladores ? String(totalAlquiladores.total) : "—"}
         />
       </div>
 
