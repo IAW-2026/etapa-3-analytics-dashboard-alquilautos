@@ -13,14 +13,14 @@ import {
 import type { VehiculoFavoriteado } from "@/lib/buyer-metrics.types";
 
 const COLORS = [
-  "#7C3AED",
-  "#8B47F0",
-  "#9A55F2",
-  "#A963F5",
-  "#B871F7",
-  "#C77FFA",
-  "#D68DFC",
-  "#E59BFF",
+  "#1A5CFF",
+  "#2D6BFF",
+  "#4076FF",
+  "#5280FF",
+  "#638AFF",
+  "#7594FF",
+  "#879EFF",
+  "#99A8FF",
 ];
 
 function shortNombre(nombre: string | null) {

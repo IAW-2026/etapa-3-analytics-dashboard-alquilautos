@@ -11,7 +11,7 @@ export function FavoritosAdopcionBar({ data }: { data: FavoritosPorUsuario }) {
           <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-1">
             Con favoritos
           </p>
-          <span className="text-3xl font-semibold text-violet-500">{data.con_favoritos}</span>
+          <span className="text-3xl font-semibold text-[#1A5CFF]">{data.con_favoritos}</span>
         </div>
 
         <div className="flex flex-col items-center gap-1 shrink-0">
@@ -30,7 +30,7 @@ export function FavoritosAdopcionBar({ data }: { data: FavoritosPorUsuario }) {
       <div className="space-y-1.5">
         <div className="relative h-2 rounded-full bg-muted overflow-hidden">
           <div
-            className="absolute inset-y-0 left-0 rounded-full bg-violet-500 transition-all duration-700"
+            className="absolute inset-y-0 left-0 rounded-full bg-[#1A5CFF] transition-all duration-700"
             style={{ width: `${pct}%` }}
           />
         </div>

@@ -30,8 +30,8 @@ export function BuyerGrowthChart({ data }: { data: MesData[] }) {
         <AreaChart data={formatted} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="gradBuyer" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#7C3AED" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="#7C3AED" stopOpacity={0} />
+              <stop offset="0%" stopColor="#1A5CFF" stopOpacity={0.35} />
+              <stop offset="100%" stopColor="#1A5CFF" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
@@ -62,10 +62,10 @@ export function BuyerGrowthChart({ data }: { data: MesData[] }) {
           <Area
             type="monotone"
             dataKey="total"
-            stroke="#7C3AED"
+            stroke="#1A5CFF"
             strokeWidth={2}
             fill="url(#gradBuyer)"
-            dot={{ r: 3, fill: "#7C3AED", strokeWidth: 0 }}
+            dot={{ r: 3, fill: "#1A5CFF", strokeWidth: 0 }}
             activeDot={{ r: 5 }}
           />
         </AreaChart>

@@ -30,7 +30,7 @@ export function BuyerOnboardingBar({ data }: { data: Onboarding }) {
             Pendiente
           </p>
           <div className="flex items-baseline justify-end gap-1.5">
-            <span className="text-sm text-amber-500 font-medium">{pctPendiente.toFixed(0)}%</span>
+            <span className="text-sm text-red-500 font-medium">{pctPendiente.toFixed(0)}%</span>
             <span className="text-3xl font-semibold text-foreground">{data.pendiente}</span>
           </div>
         </div>
@@ -42,7 +42,7 @@ export function BuyerOnboardingBar({ data }: { data: Onboarding }) {
           style={{ width: `${pctCompleto}%` }}
         />
         <div
-          className="absolute inset-y-0 rounded-full bg-amber-400 transition-all duration-700"
+          className="absolute inset-y-0 rounded-full bg-red-500 transition-all duration-700"
           style={{ left: `${pctCompleto}%`, right: 0 }}
         />
       </div>
@@ -53,7 +53,7 @@ export function BuyerOnboardingBar({ data }: { data: Onboarding }) {
           <span className="text-xs text-muted-foreground">Onboarding completo</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="size-2 rounded-full bg-amber-400" />
+          <span className="size-2 rounded-full bg-red-500" />
           <span className="text-xs text-muted-foreground">Onboarding pendiente</span>
         </div>
       </div>

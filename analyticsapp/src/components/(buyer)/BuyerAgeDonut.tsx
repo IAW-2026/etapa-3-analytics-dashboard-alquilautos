@@ -4,9 +4,9 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import type { DistribucionEdad } from "@/lib/buyer-metrics.types";
 
 const SEGMENTS = [
-  { key: "menores_de_25", label: "< 25 años", color: "#7C3AED" },
-  { key: "entre_25_y_40", label: "25–40 años", color: "#A78BFA" },
-  { key: "mayores_de_40", label: "> 40 años", color: "#C4B5FD" },
+  { key: "menores_de_25", label: "< 25 años", color: "#1A5CFF" },
+  { key: "entre_25_y_40", label: "25–40 años", color: "#5280FF" },
+  { key: "mayores_de_40", label: "> 40 años", color: "#93AEFF" },
   { key: "sin_datos", label: "Sin datos", color: "#E5E7EB" },
 ] as const;
 

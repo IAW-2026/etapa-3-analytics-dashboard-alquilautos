@@ -85,14 +85,14 @@ export function EcosystemCards({
           <Link
             key={c.href}
             href={c.href}
-            className="block p-4 bg-card rounded-xl ring-1 ring-violet-500/30 shadow-sm hover:ring-violet-500/60 hover:shadow-md transition-all group"
+            className="block p-4 bg-card rounded-xl ring-1 ring-[#1A5CFF]/30 shadow-sm hover:ring-[#1A5CFF]/60 hover:shadow-md transition-all group"
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
-                <span className="text-[10px] font-semibold uppercase text-violet-500 tracking-tight">{c.label}</span>
+                <span className="text-[10px] font-semibold uppercase text-[#1A5CFF] tracking-tight">{c.label}</span>
                 <h3 className="text-lg font-medium text-foreground">{c.title}</h3>
               </div>
-              <ArrowRight className="size-4 text-violet-400 group-hover:translate-x-0.5 transition-transform mt-1" />
+              <ArrowRight className="size-4 text-[#5280FF] group-hover:translate-x-0.5 transition-transform mt-1" />
             </div>
             <div className="mt-4 border-t border-border/60 pt-4 flex items-center gap-4">
               {c.stats.map((s) => (

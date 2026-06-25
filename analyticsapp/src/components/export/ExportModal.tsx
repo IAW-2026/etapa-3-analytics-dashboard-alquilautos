@@ -82,18 +82,18 @@ export function ExportModal({ onClose }: ExportModalProps) {
                     disabled={!app.available}
                     className={`relative text-left p-3 rounded-xl border transition-all ${
                       isSelected
-                        ? "border-violet-500 bg-violet-50 dark:bg-violet-500/10"
+                        ? "border-[#1A5CFF] bg-blue-50 dark:bg-[#1A5CFF]/10"
                         : app.available
-                          ? "border-border hover:border-violet-300 hover:bg-muted/50"
+                          ? "border-border hover:border-[#1A5CFF]/50 hover:bg-muted/50"
                           : "border-border/50 opacity-50 cursor-not-allowed"
                     }`}
                   >
                     {isSelected && (
-                      <span className="absolute top-2 right-2 size-4 bg-violet-500 rounded-full flex items-center justify-center">
+                      <span className="absolute top-2 right-2 size-4 bg-[#1A5CFF] rounded-full flex items-center justify-center">
                         <Check className="size-2.5 text-white" />
                       </span>
                     )}
-                    <p className={`text-xs font-semibold ${isSelected ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}>
+                    <p className={`text-xs font-semibold ${isSelected ? "text-[#1A5CFF] dark:text-[#5280FF]" : "text-foreground"}`}>
                       {app.label}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
@@ -112,25 +112,25 @@ export function ExportModal({ onClose }: ExportModalProps) {
             </p>
             <div className="grid grid-cols-2 gap-2">
               {([
-                { value: "excel", icon: Sheet, label: "Excel", desc: "Archivo .csv" },
-                { value: "pdf", icon: FileText, label: "PDF", desc: "Listo para imprimir" },
+                { value: "excel", icon: Sheet, label: "Excel", desc: "Archivo Excel" },
+                { value: "pdf", icon: FileText, label: "PDF", desc: "Archivo PDF" },
               ] as const).map(({ value, icon: Icon, label, desc }) => (
                 <button
                   key={value}
                   onClick={() => setFormat(value)}
                   className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all ${
                     format === value
-                      ? "border-violet-500 bg-violet-50 dark:bg-violet-500/10"
-                      : "border-border hover:border-violet-300 hover:bg-muted/50"
+                      ? "border-[#1A5CFF] bg-blue-50 dark:bg-[#1A5CFF]/10"
+                      : "border-border hover:border-[#1A5CFF]/50 hover:bg-muted/50"
                   }`}
                 >
                   <div className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${
-                    format === value ? "bg-violet-500 text-white" : "bg-muted text-muted-foreground"
+                    format === value ? "bg-[#1A5CFF] text-white" : "bg-muted text-muted-foreground"
                   }`}>
                     <Icon className="size-4" />
                   </div>
                   <div className="text-left">
-                    <p className={`text-sm font-medium ${format === value ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}>
+                    <p className={`text-sm font-medium ${format === value ? "text-[#1A5CFF] dark:text-[#5280FF]" : "text-foreground"}`}>
                       {label}
                     </p>
                     <p className="text-[11px] text-muted-foreground">{desc}</p>
