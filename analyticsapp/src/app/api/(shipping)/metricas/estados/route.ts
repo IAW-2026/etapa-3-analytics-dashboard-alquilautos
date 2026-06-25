@@ -17,7 +17,16 @@ export function getEstadosDistribucion() {
 
 export async function GET() {
   const result = await getEstadosShipping();
-  if (result.error)
-    return NextResponse.json({ error: result.error }, { status: 500 });
-  return NextResponse.json(result.data);
+
+  if (result.error) {
+    return NextResponse.json(
+      { data: null, error: result.error },
+      { status: 500 },
+    );
+  }
+
+  return NextResponse.json({
+    data: result.data,
+    error: null,
+  });
 }
