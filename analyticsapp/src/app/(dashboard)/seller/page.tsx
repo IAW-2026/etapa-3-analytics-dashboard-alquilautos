@@ -252,12 +252,12 @@ export default async function SellerPage() {
           <SectionCard title="Tasa de Conversión">
             {tasa ? (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <KpiCard label="Conversión" value={`${tasa.tasa_conversion}%`} />
-                <KpiCard label="Cancelación" value={`${tasa.tasa_cancelacion}%`} />
+                <KpiCard label="Tasa de Finalización" value={`${tasa.tasa_conversion}%`} />
+                <KpiCard label="Tasa de Cancelación" value={`${tasa.tasa_cancelacion}%`} />
                 <KpiCard
-                  label="Ciclo Promedio"
-                  value={formatNumber(tasa.tiempo_promedio_ciclo_dias)}
-                  unit="días"
+                  label="Días Promedio de Reserva"
+                  value={tasa.finalizadas > 0 ? formatNumber(tasa.tiempo_promedio_ciclo_dias) : "—"}
+                  unit={tasa.finalizadas > 0 ? "días" : undefined}
                 />
               </div>
             ) : (
