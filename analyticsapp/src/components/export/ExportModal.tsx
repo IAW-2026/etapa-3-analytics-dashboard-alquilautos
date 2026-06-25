@@ -4,9 +4,13 @@ import { useState } from "react";
 import { X, FileText, Sheet, Loader2, Check } from "lucide-react";
 import { EXPORT_APPS, type AppId, type ExportFormat } from "./export-config";
 import { exportBuyer } from "./buyer-export";
+import { exportShipping } from "./shipping-export";
 
-const EXPORTERS: Partial<Record<AppId, (format: ExportFormat) => Promise<void>>> = {
+const EXPORTERS: Partial<
+  Record<AppId, (format: ExportFormat) => Promise<void>>
+> = {
   buyer: exportBuyer,
+  shipping: exportShipping,
 };
 
 interface ExportModalProps {
@@ -45,12 +49,15 @@ export function ExportModal({ onClose }: ExportModalProps) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="bg-card w-full max-w-lg rounded-2xl shadow-2xl ring-1 ring-black/10 dark:ring-white/10 flex flex-col overflow-hidden">
-
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-border/60">
           <div>
-            <h2 className="text-base font-semibold text-foreground">Exportar datos</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">Elegí la app y el formato de exportación</p>
+            <h2 className="text-base font-semibold text-foreground">
+              Exportar datos
+            </h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Elegí la app y el formato de exportación
+            </p>
           </div>
           <button
             onClick={onClose}
@@ -87,7 +94,9 @@ export function ExportModal({ onClose }: ExportModalProps) {
                         <Check className="size-2.5 text-white" />
                       </span>
                     )}
-                    <p className={`text-xs font-semibold ${isSelected ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}>
+                    <p
+                      className={`text-xs font-semibold ${isSelected ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}
+                    >
                       {app.label}
                     </p>
                     <p className="text-[11px] text-muted-foreground mt-0.5 leading-tight">
@@ -105,10 +114,22 @@ export function ExportModal({ onClose }: ExportModalProps) {
               Formato
             </p>
             <div className="grid grid-cols-2 gap-2">
-              {([
-                { value: "excel", icon: Sheet, label: "Excel", desc: "Archivo .csv" },
-                { value: "pdf", icon: FileText, label: "PDF", desc: "Listo para imprimir" },
-              ] as const).map(({ value, icon: Icon, label, desc }) => (
+              {(
+                [
+                  {
+                    value: "excel",
+                    icon: Sheet,
+                    label: "Excel",
+                    desc: "Archivo .csv",
+                  },
+                  {
+                    value: "pdf",
+                    icon: FileText,
+                    label: "PDF",
+                    desc: "Listo para imprimir",
+                  },
+                ] as const
+              ).map(({ value, icon: Icon, label, desc }) => (
                 <button
                   key={value}
                   onClick={() => setFormat(value)}
@@ -118,13 +139,19 @@ export function ExportModal({ onClose }: ExportModalProps) {
                       : "border-border hover:border-violet-300 hover:bg-muted/50"
                   }`}
                 >
-                  <div className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${
-                    format === value ? "bg-violet-500 text-white" : "bg-muted text-muted-foreground"
-                  }`}>
+                  <div
+                    className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${
+                      format === value
+                        ? "bg-violet-500 text-white"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
                     <Icon className="size-4" />
                   </div>
                   <div className="text-left">
-                    <p className={`text-sm font-medium ${format === value ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}>
+                    <p
+                      className={`text-sm font-medium ${format === value ? "text-violet-600 dark:text-violet-400" : "text-foreground"}`}
+                    >
                       {label}
                     </p>
                     <p className="text-[11px] text-muted-foreground">{desc}</p>
@@ -143,7 +170,9 @@ export function ExportModal({ onClose }: ExportModalProps) {
             </p>
           )}
           {!selectedApp && (
-            <p className="text-xs text-muted-foreground">Seleccioná una app para continuar.</p>
+            <p className="text-xs text-muted-foreground">
+              Seleccioná una app para continuar.
+            </p>
           )}
           {canExport && <span />}
 
@@ -159,9 +188,13 @@ export function ExportModal({ onClose }: ExportModalProps) {
             }`}
           >
             {done ? (
-              <><Check className="size-4" /> Exportado</>
+              <>
+                <Check className="size-4" /> Exportado
+              </>
             ) : loading ? (
-              <><Loader2 className="size-4 animate-spin" /> Exportando…</>
+              <>
+                <Loader2 className="size-4 animate-spin" /> Exportando…
+              </>
             ) : (
               "Exportar"
             )}
