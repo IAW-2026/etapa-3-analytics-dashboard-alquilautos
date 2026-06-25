@@ -89,14 +89,11 @@ export default async function OverviewPage() {
                   {top.map((v) => (
                     <tr key={v.id_vehiculo} className="hover:bg-muted/30 transition-colors">
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="size-8 bg-muted rounded-md ring-1 ring-border/60" />
-                          <div>
-                            <div className="text-sm font-medium text-foreground">
-                              {v.marca} {v.modelo}
-                            </div>
-                            <div className="text-[11px] text-muted-foreground">{v.anio}</div>
+                        <div>
+                          <div className="text-sm font-medium text-foreground">
+                            {v.marca} {v.modelo}
                           </div>
+                          <div className="text-[11px] text-muted-foreground">{v.anio}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-muted-foreground">{v.cantidad_alquileres}</td>

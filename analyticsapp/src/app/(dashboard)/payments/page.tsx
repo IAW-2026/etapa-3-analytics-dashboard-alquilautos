@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { fetchPaymentMetric } from "@/lib/payments-api";
 import type { PaymentsResumen } from "@/lib/payments-metrics.types";
-import { KpiCard } from "@/components/KpiCard";
+import { DollarSign, Receipt, TrendingUp, CreditCard, CalendarCheck, Repeat, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
 import { PaymentsApprovalGauge } from "@/components/(payments)/PaymentsApprovalGauge";
 import { PaymentsStatusPie } from "@/components/(payments)/PaymentsStatusPie";
 import { PaymentsTopPropietarioCard } from "@/components/(payments)/PaymentsTopPropietarioCard";
+import { PaymentsKpiCard } from "@/components/(payments)/PaymentsKpiCard";
+import { PaymentsVariationKpiCard } from "@/components/(payments)/PaymentsVariationKpiCard";
 import { formatARS, formatNumber } from "@/lib/format";
 
 export const metadata: Metadata = {
@@ -47,26 +49,34 @@ export default async function PaymentsPage() {
 
       {/* KPIs — Fila 1 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <KpiCard
-          label="Ventas Totales"
+        <PaymentsKpiCard
+          title="Ventas Totales"
           value={data ? formatARS(data.ventas_totales) : "—"}
-          unit="ARS"
+          subtitle="ARS"
+          icon={DollarSign}
+          iconTone="bg-blue-500/10 text-blue-600 ring-blue-500/15"
         />
-        <KpiCard
-          label="Ticket Promedio"
+        <PaymentsKpiCard
+          title="Ticket Promedio"
           value={data ? formatARS(data.ticket_promedio) : "—"}
-          unit="ARS"
+          subtitle="ARS"
+          icon={Receipt}
+          iconTone="bg-purple-500/10 text-purple-600 ring-purple-500/15"
         />
-        <KpiCard
-          label="Ingresos Mes Actual"
+        <PaymentsVariationKpiCard
+          title="Ingresos Mes Actual"
           value={data ? formatARS(data.ingresos_mes_actual) : "—"}
-          unit="ARS"
-          delta={data ? `${data.crecimiento_mensual >= 0 ? "+" : ""}${data.crecimiento_mensual}% vs mes ant.` : undefined}
-          trend={data ? (data.crecimiento_mensual >= 0 ? "up" : "down") : "neutral"}
+          subtitle="ARS"
+          variation={data ? data.crecimiento_mensual : undefined}
+          icon={TrendingUp}
+          iconTone="bg-emerald-500/10 text-emerald-600 ring-emerald-500/15"
         />
-        <KpiCard
-          label="Pagos Totales"
+        <PaymentsKpiCard
+          title="Pagos Totales"
           value={data ? formatNumber(data.pagos_totales) : "—"}
+          subtitle="Transacciones"
+          icon={CreditCard}
+          iconTone="bg-orange-500/10 text-orange-600 ring-orange-500/15"
         />
       </div>
 
@@ -95,17 +105,26 @@ export default async function PaymentsPage() {
           </SectionCard>
         </div>
         <div className="lg:col-span-4 space-y-6">
-          <KpiCard
-            label="Pagos Hoy"
+          <PaymentsKpiCard
+            title="Pagos Hoy"
             value={data ? String(data.pagos_hoy) : "—"}
+            subtitle="Procesados hoy"
+            icon={CalendarCheck}
+            iconTone="bg-indigo-500/10 text-indigo-600 ring-indigo-500/15"
           />
-          <KpiCard
-            label="Alquiladores Recurrentes"
+          <PaymentsKpiCard
+            title="Alquiladores Recurrentes"
             value={data ? `${data.alquiladores_recurrentes}%` : "—"}
+            subtitle="Tasa de recurrencia"
+            icon={Repeat}
+            iconTone="bg-teal-500/10 text-teal-600 ring-teal-500/15"
           />
-          <KpiCard
-            label="Propietarios Activos"
+          <PaymentsKpiCard
+            title="Propietarios Activos"
             value={data ? String(data.propietarios_activos) : "—"}
+            subtitle="Con pagos este mes"
+            icon={Users}
+            iconTone="bg-amber-500/10 text-amber-600 ring-amber-500/15"
           />
         </div>
       </div>
