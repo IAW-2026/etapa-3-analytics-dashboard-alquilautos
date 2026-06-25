@@ -187,9 +187,9 @@ async function exportExcel(data: FeedbackData) {
     ws.addRow([]);
   };
 
-  addRankingBlock(ws4, "Ranking — Alquiladores",  rankAlq.map((r) => ({ id: `Alquilador #${r.id_alquilador}`,   calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
-  addRankingBlock(ws4, "Ranking — Propietarios",  rankProp.map((r) => ({ id: `Propietario #${r.id_propietario}`, calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
-  addRankingBlock(ws4, "Ranking — Vehículos",     rankVeh.map((r) => ({ id: `Vehículo #${r.id_vehiculo}`,       calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingBlock(ws4, "Ranking — Alquiladores",  rankAlq.map((r) => ({ id: (r as any).nombre_entidad ?? `Alquilador #${r.id_alquilador}`,   calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingBlock(ws4, "Ranking — Propietarios",  rankProp.map((r) => ({ id: (r as any).nombre_entidad ?? `Propietario #${r.id_propietario}`, calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingBlock(ws4, "Ranking — Vehículos",     rankVeh.map((r) => ({ id: (r as any).nombre_entidad ?? `Vehículo #${r.id_vehiculo}`,       calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
 
   // ── Hoja 5: Moderación y alertas ────────────────────────────────────────
   const ws5 = wb.addWorksheet("Moderación");
@@ -233,7 +233,7 @@ async function exportExcel(data: FeedbackData) {
     [1, 2, 3, 4].forEach((c) => styleHeader(hdrRech.getCell(c)));
 
     rechazos.forEach((r, i) => {
-      const row = ws5.addRow([`#${r.id_emisor}`, r.total_resenas, r.resenas_rechazadas, `${r.tasa_rechazo}%`]);
+      const row = ws5.addRow([(r as any).nombre_entidad ?? `#${r.id_emisor}`, r.total_resenas, r.resenas_rechazadas, `${r.tasa_rechazo}%`]);
       row.height = 18;
       styleSectionLabel(row.getCell(1), i % 2 === 1);
       styleDataValue(row.getCell(2), i % 2 === 1);
@@ -255,7 +255,7 @@ async function exportExcel(data: FeedbackData) {
     [1, 2, 3].forEach((c) => styleHeader(hdrEm.getCell(c)));
 
     emisores.forEach((e, i) => {
-      const row = ws5.addRow([`#${e.id_emisor}`, e.cantidad_resenas, e.calificacion_promedio_emitida]);
+      const row = ws5.addRow([(e as any).nombre_entidad ?? `#${e.id_emisor}`, e.cantidad_resenas, e.calificacion_promedio_emitida]);
       row.height = 18;
       styleSectionLabel(row.getCell(1), i % 2 === 1);
       styleDataValue(row.getCell(2), i % 2 === 1);
@@ -359,9 +359,9 @@ async function exportPDF(data: FeedbackData) {
     y = (doc as any).lastAutoTable.finalY + 10;
   };
 
-  addRankingPDF("RANKING — ALQUILADORES",  (data.rankAlq?.ranking ?? []).map((r: any) => ({ id: `Alquilador #${r.id_alquilador}`,   calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
-  addRankingPDF("RANKING — PROPIETARIOS",  (data.rankProp?.ranking ?? []).map((r: any) => ({ id: `Propietario #${r.id_propietario}`, calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
-  addRankingPDF("RANKING — VEHÍCULOS",     (data.rankVeh?.ranking ?? []).map((r: any) => ({ id: `Vehículo #${r.id_vehiculo}`,       calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingPDF("RANKING — ALQUILADORES",  (data.rankAlq?.ranking ?? []).map((r: any) => ({ id: r.nombre_entidad ?? `Alquilador #${r.id_alquilador}`,   calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingPDF("RANKING — PROPIETARIOS",  (data.rankProp?.ranking ?? []).map((r: any) => ({ id: r.nombre_entidad ?? `Propietario #${r.id_propietario}`, calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
+  addRankingPDF("RANKING — VEHÍCULOS",     (data.rankVeh?.ranking ?? []).map((r: any) => ({ id: r.nombre_entidad ?? `Vehículo #${r.id_vehiculo}`,       calificacion_promedio: r.calificacion_promedio, cantidad_resenas: r.cantidad_resenas })));
 
   // ── Moderación ────────────────────────────────────────────────────────────
   const tiempo = data.tiempo;
@@ -394,7 +394,7 @@ async function exportPDF(data: FeedbackData) {
     autoTable(doc, {
       startY: y,
       head: [["Emisor", "Total", "Rechazadas", "Tasa (%)"]],
-      body: rechazos.map((r) => [`#${r.id_emisor}`, String(r.total_resenas), String(r.resenas_rechazadas), `${r.tasa_rechazo}%`]),
+      body: rechazos.map((r) => [r.nombre_entidad ?? `#${r.id_emisor}`, String(r.total_resenas), String(r.resenas_rechazadas), `${r.tasa_rechazo}%`]),
       ...PDF_TABLE_STYLES,
       columnStyles: { 0: { cellWidth: 60 }, 1: { cellWidth: 35, halign: "center" }, 2: { cellWidth: 40, halign: "center" }, 3: { cellWidth: 40, halign: "center" } },
       margin: { left: 14, right: 14 },

@@ -251,7 +251,7 @@ export default async function FeedbackPage() {
                 <tbody>
                   {emisores.map((e, i) => (
                     <tr key={i} className="border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors">
-                      <td className="py-2.5 pr-4 font-medium text-foreground">#{e.id_emisor}</td>
+                      <td className="py-2.5 pr-4 font-medium text-foreground">{e.nombre_entidad ?? `#${e.id_emisor}`}</td>
                       <td className="py-2.5 pr-4 tabular-nums text-foreground">{e.cantidad_resenas}</td>
                       <td className="py-2.5 pr-4 tabular-nums text-foreground">{e.calificacion_promedio_emitida.toFixed(2)}★</td>
                       <td className="py-2.5 pr-4 text-muted-foreground text-xs">

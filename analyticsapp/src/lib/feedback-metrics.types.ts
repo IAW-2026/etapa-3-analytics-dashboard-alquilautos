@@ -40,18 +40,21 @@ export interface DistribucionData {
 // ── Rankings ──────────────────────────────────────────────
 export interface RankingItemAlquilador {
   id_alquilador: string;
+  nombre_entidad?: string;
   calificacion_promedio: number;
   cantidad_resenas: number;
 }
 
 export interface RankingItemPropietario {
   id_propietario: string;
+  nombre_entidad?: string;
   calificacion_promedio: number;
   cantidad_resenas: number;
 }
 
 export interface RankingItemVehiculo {
   id_vehiculo: string;
+  nombre_entidad?: string;
   calificacion_promedio: number;
   cantidad_resenas: number;
 }
@@ -82,6 +85,7 @@ export interface TiempoModeracion {
 // ── Emisores recurrentes ──────────────────────────────────
 export interface EmisorRecurrente {
   id_emisor: string;
+  nombre_entidad?: string;
   cantidad_resenas: number;
   calificacion_promedio_emitida: number;
   ultima_resena: string;
@@ -96,6 +100,7 @@ export interface EmisoresRecurrentesData {
 // ── Rechazos por emisor ───────────────────────────────────
 export interface EmisorRechazo {
   id_emisor: string;
+  nombre_entidad?: string;
   total_resenas: number;
   resenas_rechazadas: number;
   resenas_pendientes: number;
@@ -113,6 +118,7 @@ export interface CaidaItem {
   id_alquilador?: string;
   id_propietario?: string;
   id_vehiculo?: string;
+  nombre_entidad?: string;
   promedio_historico: number;
   promedio_reciente: number;
   caida: number;

@@ -10,6 +10,7 @@ type AnyRankingItem =
   | RankingItemVehiculo;
 
 function getEntityId(item: AnyRankingItem): string {
+  if ("nombre_entidad" in item && item.nombre_entidad) return item.nombre_entidad;
   if ("id_alquilador"  in item) return `Alquilador #${item.id_alquilador}`;
   if ("id_propietario" in item) return `Propietario #${item.id_propietario}`;
   if ("id_vehiculo"    in item) return `Vehículo #${item.id_vehiculo}`;

@@ -8,6 +8,7 @@ interface AlertasCaidaProps {
 }
 
 function getEntityLabel(item: CaidaItem): string {
+  if (item.nombre_entidad) return item.nombre_entidad;
   if (item.id_alquilador)  return `Alquilador #${item.id_alquilador}`;
   if (item.id_propietario) return `Propietario #${item.id_propietario}`;
   if (item.id_vehiculo)    return `Vehículo #${item.id_vehiculo}`;
@@ -108,7 +109,7 @@ export function FeedbackAlertasRechazos({ items }: AlertasRechazosProps) {
           {items.map((item, i) => (
             <tr key={i} className="border-b border-border/40 last:border-0 hover:bg-muted/30 transition-colors">
               <td className="py-2.5 pr-4 font-medium text-foreground">
-                #{item.id_emisor}
+                {item.nombre_entidad ?? `#${item.id_emisor}`}
               </td>
               <td className="py-2.5 px-3 text-center tabular-nums text-muted-foreground">
                 {item.total_resenas}
