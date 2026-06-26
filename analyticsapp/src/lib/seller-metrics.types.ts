@@ -79,10 +79,4 @@ export type ActividadRecienteData = {
     email: string;
     createdAt: string;
   }[];
-  pendientes_vencidos: {
-    id_reserva: string;
-    id_propietario: string;
-    vehiculo: string;
-    createdAt: string;
-  }[];
 };
