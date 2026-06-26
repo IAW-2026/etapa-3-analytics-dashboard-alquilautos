@@ -55,6 +55,7 @@ export default async function OverviewPage() {
     ocupacionRes,
     totalAlquiladoresRes,
     paymentsRes,
+    paymentsAllTimeRes,
     fbResumenRes,
     rankPropRes,
     rankVehRes,
@@ -82,6 +83,7 @@ export default async function OverviewPage() {
       desde,
       hasta,
     }),
+    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen"),
     getResumen(),
     getRankingPropietario("desc", 5),
     getRankingVehiculo("desc", 5),
@@ -99,7 +101,16 @@ export default async function OverviewPage() {
   const ingresos = ingresosRes.data ?? [];
   const actividad = actividadRes.data;
   const ocupacion = ocupacionRes.data;
-  const paymentsData = paymentsRes.data;
+  const paymentsMonthly = paymentsRes.data;
+  const paymentsAllTime = paymentsAllTimeRes.data;
+  const paymentsData = paymentsMonthly
+    ? {
+        ...paymentsMonthly,
+        ventas_totales: paymentsAllTime?.ventas_totales ?? paymentsMonthly.ventas_totales,
+        pagos_totales: paymentsAllTime?.pagos_totales ?? paymentsMonthly.pagos_totales,
+        tasa_aprobacion: paymentsAllTime?.tasa_aprobacion ?? paymentsMonthly.tasa_aprobacion,
+      }
+    : null;
   const fbResumen = fbResumenRes.data;
   const rankProp = rankPropRes.data?.ranking ?? [];
   const rankVeh = rankVehRes.data?.ranking ?? [];
