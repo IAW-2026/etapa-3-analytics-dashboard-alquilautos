@@ -27,12 +27,16 @@ function rangoMesActual() {
 export default async function PaymentsPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const result = await fetchPaymentMetric<PaymentsResumen>(
-    "/api/analytics/resumen",
-    { desde, hasta },
-  );
+  const [result, ventasResult] = await Promise.all([
+    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", {
+      desde,
+      hasta,
+    }),
+    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen"),
+  ]);
 
   const data = result.data;
+  const ventasTotales = ventasResult.data?.ventas_totales ?? data?.ventas_totales ?? 0;
 
   return (
     <>
@@ -51,7 +55,7 @@ export default async function PaymentsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <PaymentsKpiCard
           title="Ventas Totales"
-          value={data ? formatARS(data.ventas_totales) : "—"}
+          value={data ? formatARS(ventasTotales) : "—"}
           subtitle="ARS"
           icon={DollarSign}
           iconTone="bg-blue-500/10 text-blue-600 ring-blue-500/15"
