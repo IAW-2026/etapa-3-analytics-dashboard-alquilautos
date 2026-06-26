@@ -19,7 +19,7 @@ export const EXPORT_APPS: ExportApp[] = [
     id: "general",
     label: "Resumen General",
     description: "Todas las apps consolidadas",
-    available: false,
+    available: true,
   },
   {
     id: "buyer",

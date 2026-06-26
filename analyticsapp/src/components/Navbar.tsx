@@ -57,10 +57,6 @@ export function Navbar() {
 
             {/* Derecha desktop */}
             <div className="flex items-center gap-3">
-              <div className="hidden sm:flex items-center gap-2 text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                <span className="size-1.5 rounded-full bg-success" />
-                Sync hace 5 min
-              </div>
               <div className="hidden sm:block h-8 w-px bg-border mx-2" />
               <button
                 onClick={() => setExportOpen(true)}
