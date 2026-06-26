@@ -27,7 +27,7 @@ function rangoMesActual() {
 export default async function PaymentsPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const [result, ventasResult] = await Promise.all([
+  const [monthlyRes, allTimeRes] = await Promise.all([
     fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", {
       desde,
       hasta,
@@ -35,8 +35,17 @@ export default async function PaymentsPage() {
     fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen"),
   ]);
 
-  const data = result.data;
-  const ventasTotales = ventasResult.data?.ventas_totales ?? data?.ventas_totales ?? 0;
+  const monthly = monthlyRes.data;
+  const allTime = allTimeRes.data;
+
+  const data = monthly
+    ? {
+        ...monthly,
+        ventas_totales: allTime?.ventas_totales ?? monthly.ventas_totales,
+        pagos_totales: allTime?.pagos_totales ?? monthly.pagos_totales,
+        tasa_aprobacion: allTime?.tasa_aprobacion ?? monthly.tasa_aprobacion,
+      }
+    : null;
 
   return (
     <>
@@ -45,9 +54,9 @@ export default async function PaymentsPage() {
         description="Procesamiento de pagos, payouts a propietarios y métodos de pago."
       />
 
-      {result.error && (
+      {monthlyRes.error && (
         <div className="mb-6 p-4 rounded-lg bg-danger/10 text-danger text-sm">
-          No se pudo conectar con Payments App. {result.error}
+          No se pudo conectar con Payments App. {monthlyRes.error}
         </div>
       )}
 
@@ -55,7 +64,7 @@ export default async function PaymentsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <PaymentsKpiCard
           title="Ventas Totales"
-          value={data ? formatARS(ventasTotales) : "—"}
+          value={data ? formatARS(data.ventas_totales) : "—"}
           subtitle="ARS"
           icon={DollarSign}
           iconTone="bg-blue-500/10 text-blue-600 ring-blue-500/15"
