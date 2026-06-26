@@ -8,10 +8,12 @@ import { exportPayments } from "./payments-export";
 import { exportFeedback } from "./feedback-export";
 import { exportSeller } from "./seller-export";
 import { exportShipping } from "./shipping-export";
+import { exportGeneral } from "./general-export";
 
 const EXPORTERS: Partial<
   Record<AppId, (format: ExportFormat) => Promise<void>>
 > = {
+  general: exportGeneral,
   buyer: exportBuyer,
   payments: exportPayments,
   feedback: exportFeedback,
