@@ -2,8 +2,15 @@ import { fetchSellerMetric } from "@/lib/seller-api";
 import { fetchPaymentMetric } from "@/lib/payments-api";
 import { getTotalAlquiladores } from "@/app/api/(buyer)/alquiladores/total/route";
 import { getResumen } from "@/app/api/(feedback)/metrics/resumen/route";
-import { getRankingPropietario, getRankingVehiculo } from "@/app/api/(feedback)/metrics/ranking/[tipo]/route";
-import { getCaidaAlquilador, getCaidaPropietario, getCaidaVehiculo } from "@/app/api/(feedback)/metrics/caida/[tipo]/route";
+import {
+  getRankingPropietario,
+  getRankingVehiculo,
+} from "@/app/api/(feedback)/metrics/ranking/[tipo]/route";
+import {
+  getCaidaAlquilador,
+  getCaidaPropietario,
+  getCaidaVehiculo,
+} from "@/app/api/(feedback)/metrics/caida/[tipo]/route";
 import { KpiCard } from "@/components/KpiCard";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
@@ -15,8 +22,16 @@ import { PaymentsStatusPie } from "@/components/(payments)/PaymentsStatusPie";
 import { FeedbackRankingList } from "@/components/(feedback)/FeedbackRankingList";
 import { FeedbackAlertasCaida } from "@/components/(feedback)/FeedbackAlertas";
 import { formatARS, formatNumber } from "@/lib/format";
-import type { ResumenGeneral, TasaConversion, VehiculoTop, OcupacionVehiculos, IngresoPeriodo, ActividadRecienteData } from "@/lib/seller-metrics.types";
+import type {
+  ResumenGeneral,
+  TasaConversion,
+  VehiculoTop,
+  OcupacionVehiculos,
+  IngresoPeriodo,
+  ActividadRecienteData,
+} from "@/lib/seller-metrics.types";
 import type { PaymentsResumen } from "@/lib/payments-metrics.types";
+import { getDistribucionSemanal } from "../api/(shipping)/metricas/distribucion-semanal/route";
 
 function rangoMesActual() {
   const now = new Date();
@@ -29,21 +44,48 @@ function rangoMesActual() {
 export default async function OverviewPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const [resumenRes, tasaRes, topRes, ingresosRes, actividadRes, ocupacionRes, totalAlquiladoresRes, paymentsRes, fbResumenRes, rankPropRes, rankVehRes, caidaAlqRes, caidaPropRes, caidaVehRes] = await Promise.all([
+  const [
+    resumenRes,
+    tasaRes,
+    topRes,
+    ingresosRes,
+    actividadRes,
+    ocupacionRes,
+    totalAlquiladoresRes,
+    paymentsRes,
+    fbResumenRes,
+    rankPropRes,
+    rankVehRes,
+    caidaAlqRes,
+    caidaPropRes,
+    caidaVehRes,
+    distribucionSemanalRes,
+  ] = await Promise.all([
     fetchSellerMetric<ResumenGeneral>("/resumen-general"),
     fetchSellerMetric<TasaConversion>("/tasa-conversion"),
     fetchSellerMetric<VehiculoTop[]>("/vehiculos-top", { limit: "5" }),
-    fetchSellerMetric<IngresoPeriodo[]>("/ingresos-por-periodo", { granularity: "month" }),
-    fetchSellerMetric<ActividadRecienteData>("/actividad-reciente", { limit: "5" }),
-    fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", { desde, hasta }),
+    fetchSellerMetric<IngresoPeriodo[]>("/ingresos-por-periodo", {
+      granularity: "month",
+    }),
+    fetchSellerMetric<ActividadRecienteData>("/actividad-reciente", {
+      limit: "5",
+    }),
+    fetchSellerMetric<OcupacionVehiculos>("/ocupacion-vehiculos", {
+      desde,
+      hasta,
+    }),
     getTotalAlquiladores(),
-    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", { desde, hasta }),
+    fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", {
+      desde,
+      hasta,
+    }),
     getResumen(),
     getRankingPropietario("desc", 5),
     getRankingVehiculo("desc", 5),
     getCaidaAlquilador(),
     getCaidaPropietario(),
     getCaidaVehiculo(),
+    getDistribucionSemanal(),
   ]);
 
   const resumen = resumenRes.data;
@@ -62,6 +104,25 @@ export default async function OverviewPage() {
     ...(caidaPropRes.data?.entidades_con_caida ?? []),
     ...(caidaVehRes.data?.entidades_con_caida ?? []),
   ].sort((a, b) => b.caida - a.caida);
+  const distribucion = distribucionSemanalRes.data ?? [];
+  const diaMasEntregas =
+    distribucion.length > 0
+      ? (() => {
+          const maxPorcentaje = Math.max(
+            ...distribucion.map((d) => d.entregas),
+          );
+
+          const dias = distribucion
+            .filter((d) => d.entregas === maxPorcentaje)
+            .map((d) => d.day)
+            .join("/");
+
+          return {
+            day: dias,
+            entregas: maxPorcentaje,
+          };
+        })()
+      : null;
 
   const hayErrorCritico = resumenRes.error && tasaRes.error;
 
@@ -112,16 +173,23 @@ export default async function OverviewPage() {
                 </thead>
                 <tbody className="divide-y divide-border/60">
                   {top.map((v) => (
-                    <tr key={v.id_vehiculo} className="hover:bg-muted/30 transition-colors">
+                    <tr
+                      key={v.id_vehiculo}
+                      className="hover:bg-muted/30 transition-colors"
+                    >
                       <td className="px-6 py-4">
                         <div>
                           <div className="text-sm font-medium text-foreground">
                             {v.marca} {v.modelo}
                           </div>
-                          <div className="text-[11px] text-muted-foreground">{v.anio}</div>
+                          <div className="text-[11px] text-muted-foreground">
+                            {v.anio}
+                          </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-muted-foreground">{v.cantidad_alquileres}</td>
+                      <td className="px-6 py-4 text-sm text-muted-foreground">
+                        {v.cantidad_alquileres}
+                      </td>
                       <td className="px-6 py-4 text-sm text-foreground text-right font-medium">
                         {formatARS(v.ingresos_generados)}
                       </td>
@@ -129,7 +197,10 @@ export default async function OverviewPage() {
                   ))}
                   {top.length === 0 && (
                     <tr>
-                      <td colSpan={3} className="px-6 py-8 text-center text-sm text-muted-foreground">
+                      <td
+                        colSpan={3}
+                        className="px-6 py-8 text-center text-sm text-muted-foreground"
+                      >
                         Sin datos disponibles
                       </td>
                     </tr>
@@ -180,7 +251,18 @@ export default async function OverviewPage() {
             }}
             buyerStats={{ total: totalAlquiladores?.total ?? 0 }}
             paymentsStats={{ recaudadoHoy: paymentsData?.pagos_hoy ?? 0 }}
-            feedbackStats={fbResumen ? { resenas: fbResumen.total_resenas, calificacion: fbResumen.calificacion_promedio_global } : undefined}
+            feedbackStats={
+              fbResumen
+                ? {
+                    resenas: fbResumen.total_resenas,
+                    calificacion: fbResumen.calificacion_promedio_global,
+                  }
+                : undefined
+            }
+            shippingStats={{
+              dia: diaMasEntregas?.day ?? "—",
+              porcentaje: diaMasEntregas?.entregas ?? 0,
+            }}
           />
           <SectionCard
             title="Entidades con caída brusca"

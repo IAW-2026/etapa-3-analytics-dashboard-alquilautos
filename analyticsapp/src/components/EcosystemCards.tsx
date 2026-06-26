@@ -11,21 +11,14 @@ type AppCard =
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/buyer" | "/feedback";
+      href: "/buyer" | "/feedback" | "/payments" | "/shipping";
       label: string;
       title: string;
       status: "active";
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/payments";
-      label: string;
-      title: string;
-      status: "active";
-      stats: { label: string; value: string }[];
-    }
-  | {
-      href: "/shipping" | "/payments" | "/payments";
+      href: "/payments" | "/feedback";
       label: string;
       title: string;
       status: "soon";
@@ -36,11 +29,16 @@ export function EcosystemCards({
   buyerStats,
   paymentsStats,
   feedbackStats,
+  shippingStats,
 }: {
   sellerStats: { propietarios: number; ocupacionPromedio: number };
   buyerStats: { total: number };
   paymentsStats?: { recaudadoHoy: number };
   feedbackStats?: { resenas: number; calificacion: number };
+  shippingStats: {
+    dia: string;
+    porcentaje: number;
+  };
 }) {
   const cards: AppCard[] = [
     {
@@ -50,7 +48,10 @@ export function EcosystemCards({
       status: "live",
       stats: [
         { label: "Propietarios", value: String(sellerStats.propietarios) },
-        { label: "Ocupación prom.", value: `${sellerStats.ocupacionPromedio}%` },
+        {
+          label: "Ocupación prom.",
+          value: `${sellerStats.ocupacionPromedio}%`,
+        },
       ],
     },
     {
@@ -60,13 +61,33 @@ export function EcosystemCards({
       status: "active",
       stats: [{ label: "Alquiladores", value: String(buyerStats.total) }],
     },
-    { href: "/shipping", label: "Shipping App", title: "Logística & Entregas", status: "soon" },
+    {
+      href: "/shipping",
+      label: "Shipping App",
+      title: "Entregas",
+      status: "active",
+      stats: [
+        {
+          label: "Día con más entregas",
+          value: shippingStats.dia,
+        },
+        {
+          label: "Porcentaje",
+          value: `${shippingStats.porcentaje}%`,
+        },
+      ],
+    },
     {
       href: "/payments",
       label: "Payments App",
       title: "Pagos & Payouts",
       status: "active",
-      stats: [{ label: "Recaudado hoy", value: paymentsStats ? formatARS(paymentsStats.recaudadoHoy) : "—" }],
+      stats: [
+        {
+          label: "Recaudado hoy",
+          value: paymentsStats ? formatARS(paymentsStats.recaudadoHoy) : "—",
+        },
+      ],
     },
     {
       href: "/feedback",
@@ -75,7 +96,10 @@ export function EcosystemCards({
       status: "active",
       stats: [
         { label: "Reseñas", value: String(feedbackStats?.resenas ?? "—") },
-        { label: "Calif. prom.", value: feedbackStats ? `${feedbackStats.calificacion}★` : "—" },
+        {
+          label: "Calif. prom.",
+          value: feedbackStats ? `${feedbackStats.calificacion}★` : "—",
+        },
       ],
     },
   ];
@@ -94,7 +118,9 @@ export function EcosystemCards({
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
-                <span className="text-[10px] font-semibold uppercase opacity-70 tracking-tight">{c.label}</span>
+                <span className="text-[10px] font-semibold uppercase opacity-70 tracking-tight">
+                  {c.label}
+                </span>
                 <h3 className="text-lg font-medium">{c.title}</h3>
               </div>
               <div className="size-2 bg-white rounded-full pulse-ring" />
@@ -102,7 +128,9 @@ export function EcosystemCards({
             <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/20 pt-4">
               {c.stats.map((s) => (
                 <div key={s.label}>
-                  <p className="text-[10px] opacity-70 uppercase tracking-wide">{s.label}</p>
+                  <p className="text-[10px] opacity-70 uppercase tracking-wide">
+                    {s.label}
+                  </p>
                   <p className="text-sm font-medium">{s.value}</p>
                 </div>
               ))}
@@ -116,16 +144,30 @@ export function EcosystemCards({
           >
             <div className="flex items-start justify-between">
               <div className="flex flex-col">
-                <span className="text-[10px] font-semibold uppercase text-[#1A5CFF] tracking-tight">{c.label}</span>
-                <h3 className="text-lg font-medium text-foreground">{c.title}</h3>
+                <span className="text-[10px] font-semibold uppercase text-[#1A5CFF] tracking-tight">
+                  {c.label}
+                </span>
+                <h3 className="text-lg font-medium text-foreground">
+                  {c.title}
+                </h3>
               </div>
               <ArrowRight className="size-4 text-[#5280FF] group-hover:translate-x-0.5 transition-transform mt-1" />
             </div>
             <div className="mt-4 border-t border-border/60 pt-4 flex items-center gap-4">
               {c.stats.map((s) => (
                 <div key={s.label}>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
-                  <p className="text-sm font-semibold text-foreground">{s.value}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
+                    {s.label}
+                  </p>
+                  <p className="text-sm font-semibold text-foreground">
+                    {c.href === "/shipping" && s.label === "Porcentaje" ? (
+                      <span className="inline-flex items-center rounded-md px-1 py-0.5 text-sm font-semibold leading-none text-slate-600 bg-slate-100 ring-1 ring-slate-200 dark:text-slate-300 dark:bg-slate-800 dark:ring-slate-700">
+                        {s.value}
+                      </span>
+                    ) : (
+                      s.value
+                    )}
+                  </p>
                 </div>
               ))}
             </div>
@@ -146,7 +188,9 @@ export function EcosystemCards({
                     PRÓXIMAMENTE
                   </span>
                 </div>
-                <h3 className="text-lg font-medium text-muted-foreground">{c.title}</h3>
+                <h3 className="text-lg font-medium text-muted-foreground">
+                  {c.title}
+                </h3>
               </div>
             </div>
             <div className="mt-4 space-y-2 opacity-30">
