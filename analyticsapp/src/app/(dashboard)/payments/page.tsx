@@ -80,28 +80,35 @@ export default async function PaymentsPage() {
         />
       </div>
 
-      {/* Charts row */}
+      {/* Charts + Right column */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
-        <div className="lg:col-span-5">
-          <SectionCard title="Tasa de Aprobación">
-            {data ? (
-              <PaymentsApprovalGauge value={data.tasa_aprobacion} />
-            ) : (
-              <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de aprobación</p>
-            )}
-          </SectionCard>
-        </div>
-        <div className="lg:col-span-3">
-          <SectionCard title="Estado de Pagos">
-            {data ? (
-              <PaymentsStatusPie
-                pendientes={data.pendientes}
-                cancelados={data.cancelados}
-                pagos_hoy={data.pagos_hoy}
-              />
-            ) : (
-              <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de pagos</p>
-            )}
+        <div className="lg:col-span-8 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-8 gap-6">
+            <div className="lg:col-span-5">
+              <SectionCard title="Tasa de Aprobación">
+                {data ? (
+                  <PaymentsApprovalGauge value={data.tasa_aprobacion} />
+                ) : (
+                  <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de aprobación</p>
+                )}
+              </SectionCard>
+            </div>
+            <div className="lg:col-span-3">
+              <SectionCard title="Estado de Pagos">
+                {data ? (
+                  <PaymentsStatusPie
+                    pendientes={data.pendientes}
+                    cancelados={data.cancelados}
+                    pagos_hoy={data.pagos_hoy}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de pagos</p>
+                )}
+              </SectionCard>
+            </div>
+          </div>
+          <SectionCard title="Top Propietario">
+            <PaymentsTopPropietarioCard data={data?.top_propietario ?? null} />
           </SectionCard>
         </div>
         <div className="lg:col-span-4 space-y-6">
@@ -128,11 +135,6 @@ export default async function PaymentsPage() {
           />
         </div>
       </div>
-
-      {/* Top Propietario */}
-      <SectionCard title="Top Propietario">
-        <PaymentsTopPropietarioCard data={data?.top_propietario ?? null} />
-      </SectionCard>
     </>
   );
 }
