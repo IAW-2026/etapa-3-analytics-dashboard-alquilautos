@@ -11,7 +11,7 @@ type AppCard =
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/buyer";
+      href: "/buyer" | "/feedback";
       label: string;
       title: string;
       status: "active";
@@ -25,7 +25,7 @@ type AppCard =
       stats: { label: string; value: string }[];
     }
   | {
-      href: "/shipping" | "/feedback";
+      href: "/shipping" | "/payments" | "/payments";
       label: string;
       title: string;
       status: "soon";
@@ -35,10 +35,12 @@ export function EcosystemCards({
   sellerStats,
   buyerStats,
   paymentsStats,
+  feedbackStats,
 }: {
   sellerStats: { propietarios: number; ocupacionPromedio: number };
   buyerStats: { total: number };
   paymentsStats?: { recaudadoHoy: number };
+  feedbackStats?: { resenas: number; calificacion: number };
 }) {
   const cards: AppCard[] = [
     {
@@ -66,7 +68,16 @@ export function EcosystemCards({
       status: "active",
       stats: [{ label: "Recaudado hoy", value: paymentsStats ? formatARS(paymentsStats.recaudadoHoy) : "—" }],
     },
-    { href: "/feedback", label: "Feedback App", title: "Calificaciones", status: "soon" },
+    {
+      href: "/feedback",
+      label: "Feedback App",
+      title: "Calificaciones",
+      status: "active",
+      stats: [
+        { label: "Reseñas", value: String(feedbackStats?.resenas ?? "—") },
+        { label: "Calif. prom.", value: feedbackStats ? `${feedbackStats.calificacion}★` : "—" },
+      ],
+    },
   ];
 
   return (
