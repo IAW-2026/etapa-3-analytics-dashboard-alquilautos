@@ -4,14 +4,7 @@ import { formatARS } from "@/lib/format";
 
 type AppCard =
   | {
-      href: "/seller";
-      label: string;
-      title: string;
-      status: "live";
-      stats: { label: string; value: string }[];
-    }
-  | {
-      href: "/buyer" | "/feedback" | "/payments" | "/shipping";
+      href: "/seller" | "/buyer" | "/feedback" | "/payments" | "/shipping";
       label: string;
       title: string;
       status: "active";
@@ -45,7 +38,7 @@ export function EcosystemCards({
       href: "/seller",
       label: "Seller App",
       title: "Gestión Propietarios",
-      status: "live",
+      status: "active",
       stats: [
         { label: "Propietarios", value: String(sellerStats.propietarios) },
         {
@@ -110,33 +103,7 @@ export function EcosystemCards({
         Ecosistema de Apps
       </h2>
       {cards.map((c) =>
-        c.status === "live" ? (
-          <Link
-            key={c.href}
-            href={c.href}
-            className="block p-4 bg-primary text-white rounded-xl ring-1 ring-primary-600 shadow-md hover:bg-primary-500 transition-colors"
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex flex-col">
-                <span className="text-[10px] font-semibold uppercase opacity-70 tracking-tight">
-                  {c.label}
-                </span>
-                <h3 className="text-lg font-medium">{c.title}</h3>
-              </div>
-              <div className="size-2 bg-white rounded-full pulse-ring" />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/20 pt-4">
-              {c.stats.map((s) => (
-                <div key={s.label}>
-                  <p className="text-[10px] opacity-70 uppercase tracking-wide">
-                    {s.label}
-                  </p>
-                  <p className="text-sm font-medium">{s.value}</p>
-                </div>
-              ))}
-            </div>
-          </Link>
-        ) : c.status === "active" ? (
+        c.status === "active" ? (
           <Link
             key={c.href}
             href={c.href}
