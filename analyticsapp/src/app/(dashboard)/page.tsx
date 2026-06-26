@@ -32,6 +32,8 @@ import type {
 } from "@/lib/seller-metrics.types";
 import type { PaymentsResumen } from "@/lib/payments-metrics.types";
 import { getDistribucionSemanal } from "../api/(shipping)/metricas/distribucion-semanal/route";
+import { getEstadosDistribucion } from "../api/(shipping)/metricas/estados/route";
+import { ShippingStatusPie } from "@/components/(shipping)/ShippingStatusPie";
 
 function rangoMesActual() {
   const now = new Date();
@@ -60,6 +62,7 @@ export default async function OverviewPage() {
     caidaPropRes,
     caidaVehRes,
     distribucionSemanalRes,
+    estadosEntregasRes,
   ] = await Promise.all([
     fetchSellerMetric<ResumenGeneral>("/resumen-general"),
     fetchSellerMetric<TasaConversion>("/tasa-conversion"),
@@ -86,6 +89,7 @@ export default async function OverviewPage() {
     getCaidaPropietario(),
     getCaidaVehiculo(),
     getDistribucionSemanal(),
+    getEstadosDistribucion(),
   ]);
 
   const resumen = resumenRes.data;
@@ -125,6 +129,7 @@ export default async function OverviewPage() {
       : null;
 
   const hayErrorCritico = resumenRes.error && tasaRes.error;
+  const estadosEntregas = estadosEntregasRes.data ?? [];
 
   return (
     <>
@@ -240,6 +245,12 @@ export default async function OverviewPage() {
                 </SectionCard>
               )}
             </div>
+          )}
+          {/* Sección de estado entrega*/}
+          {estadosEntregas.length > 0 && (
+            <SectionCard title="Estado de Entregas">
+              <ShippingStatusPie data={estadosEntregas} />
+            </SectionCard>
           )}
         </div>
 
