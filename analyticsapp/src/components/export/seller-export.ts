@@ -51,7 +51,6 @@ async function exportExcel(data: SellerData) {
   const porEstado: [string, number][] = Object.entries(data.resumen?.reservas?.por_estado ?? {});
   const ultimasReservas: ActividadRecienteData["ultimas_reservas"] = data.actividad?.ultimas_reservas ?? [];
   const nuevosPropietarios: ActividadRecienteData["nuevos_propietarios"] = data.actividad?.nuevos_propietarios ?? [];
-  const pendientesVencidos: ActividadRecienteData["pendientes_vencidos"] = data.actividad?.pendientes_vencidos ?? [];
 
   // ── Hoja 1: Resumen ──────────────────────────────────────────────────────
   const ws1 = wb.addWorksheet("Resumen");
@@ -314,19 +313,6 @@ async function exportExcel(data: SellerData) {
     styleDataValue(row.getCell(3), i % 2 === 1);
   });
 
-  ws7.addRow([]);
-  ws7.addRow(["Pendientes vencidos (+24hs sin respuesta)"]);
-  styleTitle(ws7.lastRow!.getCell(1));
-  const hdrPend = ws7.addRow(["Vehículo", "Fecha"]);
-  hdrPend.height = 20;
-  [1, 2].forEach((c) => styleHeader(hdrPend.getCell(c)));
-  pendientesVencidos.forEach((r, i) => {
-    const row = ws7.addRow([r.vehiculo, new Date(r.createdAt).toLocaleDateString("es-AR")]);
-    row.height = 18;
-    styleSectionLabel(row.getCell(1), i % 2 === 1);
-    styleDataValue(row.getCell(2), i % 2 === 1);
-  });
-
   const buffer = await wb.xlsx.writeBuffer();
   const blob   = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
   const url    = URL.createObjectURL(blob);
@@ -480,7 +466,6 @@ async function exportPDF(data: SellerData) {
   // ── Actividad reciente ────────────────────────────────────────────────────
   const ultimasReservas: ActividadRecienteData["ultimas_reservas"] = data.actividad?.ultimas_reservas ?? [];
   const nuevosPropietarios: ActividadRecienteData["nuevos_propietarios"] = data.actividad?.nuevos_propietarios ?? [];
-  const pendientesVencidos: ActividadRecienteData["pendientes_vencidos"] = data.actividad?.pendientes_vencidos ?? [];
 
   if (ultimasReservas.length > 0) {
     if (y > 220) { doc.addPage(); y = 20; }
@@ -508,19 +493,6 @@ async function exportPDF(data: SellerData) {
       margin: { left: 14, right: 14 },
     });
     y = (doc as any).lastAutoTable.finalY + 10;
-  }
-
-  if (pendientesVencidos.length > 0) {
-    if (y > 220) { doc.addPage(); y = 20; }
-    y = addPDFSectionTitle(doc, "PENDIENTES VENCIDOS (+24HS)", y);
-    autoTable(doc, {
-      startY: y,
-      head: [["Vehículo", "Fecha"]],
-      body: pendientesVencidos.map((r) => [r.vehiculo, new Date(r.createdAt).toLocaleDateString("es-AR")]),
-      ...PDF_TABLE_STYLES,
-      columnStyles: { 0: { cellWidth: 90 }, 1: { cellWidth: 90, halign: "center" } },
-      margin: { left: 14, right: 14 },
-    });
   }
 
   addPDFFooter(doc);

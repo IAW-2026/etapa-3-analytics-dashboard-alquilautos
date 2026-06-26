@@ -17,7 +17,13 @@ function getEntityId(item: AnyRankingItem): string {
   return "—";
 }
 
-const MEDAL: Record<number, string> = { 0: "🥇", 1: "🥈", 2: "🥉" };
+const POSITION_STYLE: Record<number, string> = {
+  0: "bg-yellow-400/20 text-yellow-600 ring-1 ring-yellow-400/40",
+  1: "bg-slate-300/30 text-slate-500 ring-1 ring-slate-300/50",
+  2: "bg-amber-600/15 text-amber-700 ring-1 ring-amber-600/30",
+};
+
+const DEFAULT_POSITION_STYLE = "bg-muted text-muted-foreground";
 
 interface Props {
   items: AnyRankingItem[];
@@ -41,8 +47,11 @@ export function FeedbackRankingList({ items }: Props) {
         return (
           <div key={i} className="flex items-center gap-3 py-1">
             {/* Posición */}
-            <span className="text-base w-6 text-center shrink-0">
-              {MEDAL[i] ?? <span className="text-sm text-muted-foreground font-mono">{i + 1}</span>}
+            <span
+              className={`text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center shrink-0 tabular-nums
+                ${POSITION_STYLE[i] ?? DEFAULT_POSITION_STYLE}`}
+            >
+              {i + 1}
             </span>
 
             {/* ID entidad + barra */}
