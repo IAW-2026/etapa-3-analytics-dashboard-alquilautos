@@ -4,6 +4,9 @@ Panel consolidado de métricas del ecosistema AlquilAutos. Visualiza en tiempo r
 
 ---
 
+## Link de vercel
+https://etapa-3-analytics-dashboard-alquila.vercel.app/
+
 ## Cuenta de prueba
 
 | Campo        | Valor                                 |
