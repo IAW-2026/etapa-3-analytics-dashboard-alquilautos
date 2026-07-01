@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { fetchPaymentMetric } from "@/lib/payments-api";
+import { fetchSellerMetric } from "@/lib/seller-api";
 import type { PaymentsResumen } from "@/lib/payments-metrics.types";
+import type { PropietarioTop } from "@/lib/seller-metrics.types";
 import { DollarSign, Receipt, TrendingUp, CreditCard, CalendarCheck, Repeat, Users } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { SectionCard } from "@/components/SectionCard";
@@ -27,12 +29,13 @@ function rangoMesActual() {
 export default async function PaymentsPage() {
   const { desde, hasta } = rangoMesActual();
 
-  const [monthlyRes, allTimeRes] = await Promise.all([
+  const [monthlyRes, allTimeRes, propietariosRes] = await Promise.all([
     fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen", {
       desde,
       hasta,
     }),
     fetchPaymentMetric<PaymentsResumen>("/api/analytics/resumen"),
+    fetchSellerMetric<PropietarioTop[]>("/propietarios-top", { limit: "50" }),
   ]);
 
   const monthly = monthlyRes.data;
@@ -44,6 +47,16 @@ export default async function PaymentsPage() {
         ventas_totales: allTime?.ventas_totales ?? monthly.ventas_totales,
         pagos_totales: allTime?.pagos_totales ?? monthly.pagos_totales,
         tasa_aprobacion: allTime?.tasa_aprobacion ?? monthly.tasa_aprobacion,
+        top_propietario: allTime?.top_propietario ?? monthly.top_propietario,
+      }
+    : null;
+
+  const topProp = data?.top_propietario ?? null;
+  const propietarios = propietariosRes.data ?? [];
+  const topPropEnriquecido = topProp
+    ? {
+        ...topProp,
+        ...propietarios.find((p) => p.id_propietario === topProp.id),
       }
     : null;
 
@@ -112,7 +125,7 @@ export default async function PaymentsPage() {
                   <PaymentsStatusPie
                     pendientes={data.pendientes}
                     cancelados={data.cancelados}
-                    pagos_hoy={data.pagos_hoy}
+                    pagos_totales={data.pagos_totales}
                   />
                 ) : (
                   <p className="text-sm text-muted-foreground py-8 text-center">Sin datos de pagos</p>
@@ -121,7 +134,7 @@ export default async function PaymentsPage() {
             </div>
           </div>
           <SectionCard title="Top Propietario">
-            <PaymentsTopPropietarioCard data={data?.top_propietario ?? null} />
+            <PaymentsTopPropietarioCard data={topPropEnriquecido} />
           </SectionCard>
         </div>
         <div className="lg:col-span-4 space-y-6">

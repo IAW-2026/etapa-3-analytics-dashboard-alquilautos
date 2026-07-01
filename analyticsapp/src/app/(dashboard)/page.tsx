@@ -236,7 +236,7 @@ export default async function OverviewPage() {
                 <PaymentsStatusPie
                   pendientes={paymentsData.pendientes}
                   cancelados={paymentsData.cancelados}
-                  pagos_hoy={paymentsData.pagos_hoy}
+                  pagos_totales={paymentsData.pagos_totales}
                 />
               </SectionCard>
             </div>

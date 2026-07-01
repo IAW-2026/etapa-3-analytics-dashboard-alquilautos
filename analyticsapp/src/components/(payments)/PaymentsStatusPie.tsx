@@ -5,25 +5,26 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 const SEGMENTS = [
   { key: "pendientes", label: "Pendientes", color: "#F59E0B" },
   { key: "cancelados", label: "Cancelados", color: "#EF4444" },
-  { key: "pagos_hoy", label: "Pagos hoy", color: "#3B82F6" },
+  { key: "completados", label: "Completados", color: "#22C55E" },
 ] as const;
 
 export function PaymentsStatusPie({
   pendientes,
   cancelados,
-  pagos_hoy,
+  pagos_totales,
 }: {
   pendientes: number;
   cancelados: number;
-  pagos_hoy: number;
+  pagos_totales: number;
 }) {
-  const total = pendientes + cancelados + pagos_hoy;
+  const completados = pagos_totales - pendientes - cancelados;
+  const total = pendientes + cancelados + completados;
 
   const chartData = SEGMENTS.map(({ key, label, color }) => ({
     name: label,
-    value: key === "pendientes" ? pendientes : key === "cancelados" ? cancelados : pagos_hoy,
+    value: key === "pendientes" ? pendientes : key === "cancelados" ? cancelados : completados,
     color,
-    pct: total > 0 ? Math.round(((key === "pendientes" ? pendientes : key === "cancelados" ? cancelados : pagos_hoy) / total) * 100) : 0,
+    pct: total > 0 ? Math.round(((key === "pendientes" ? pendientes : key === "cancelados" ? cancelados : completados) / total) * 100) : 0,
   }));
 
   return (
