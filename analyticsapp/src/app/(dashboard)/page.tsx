@@ -109,6 +109,8 @@ export default async function OverviewPage() {
         ventas_totales: paymentsAllTime?.ventas_totales ?? paymentsMonthly.ventas_totales,
         pagos_totales: paymentsAllTime?.pagos_totales ?? paymentsMonthly.pagos_totales,
         tasa_aprobacion: paymentsAllTime?.tasa_aprobacion ?? paymentsMonthly.tasa_aprobacion,
+        pendientes: paymentsAllTime?.pendientes ?? paymentsMonthly.pendientes,
+        cancelados: paymentsAllTime?.cancelados ?? paymentsMonthly.cancelados,
       }
     : null;
   const fbResumen = fbResumenRes.data;

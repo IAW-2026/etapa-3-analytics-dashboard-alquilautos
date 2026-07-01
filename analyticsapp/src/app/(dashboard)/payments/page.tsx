@@ -47,6 +47,8 @@ export default async function PaymentsPage() {
         ventas_totales: allTime?.ventas_totales ?? monthly.ventas_totales,
         pagos_totales: allTime?.pagos_totales ?? monthly.pagos_totales,
         tasa_aprobacion: allTime?.tasa_aprobacion ?? monthly.tasa_aprobacion,
+        pendientes: allTime?.pendientes ?? monthly.pendientes,
+        cancelados: allTime?.cancelados ?? monthly.cancelados,
         top_propietario: allTime?.top_propietario ?? monthly.top_propietario,
       }
     : null;
